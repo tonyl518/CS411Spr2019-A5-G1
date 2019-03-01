@@ -1,1 +1,0 @@
-Primary user stories: * Register * Log in* Connection to Spotify and set up dish and music preferences* Input ingredients* Like or Dislike recipe recommendedAdditional: * Safe

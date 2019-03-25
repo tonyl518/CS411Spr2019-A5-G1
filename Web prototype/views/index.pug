@@ -3,3 +3,7 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+
+  form(method = 'POST' action = '/search')
+    label(for='ingredients') Enter ingredients separated by commas: 
+    input#ingredients.form-control(type='text', name='ingredients')

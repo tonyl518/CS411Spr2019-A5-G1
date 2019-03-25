@@ -4,7 +4,7 @@ block content
   h1= title
   p Welcome to #{title}
 
-  form(method = 'POST' action = '/search')
+  form(method = 'POST' action = '/')
     label(for='ingredients') Enter ingredients separated by commas: 
     input#ingredients.form-control(type='text', name='ingredients')
     button.btn.btn-primary(type='submit') Submit

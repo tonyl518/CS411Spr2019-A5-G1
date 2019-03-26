@@ -1,11 +1,12 @@
 var express = require('express');
 var router = express.Router();
+const config = require('../config.json');
 
 router.use(express.urlencoded())
 
 const request = require('request');
 
-key = 'c848a51cfbmshd7d4d51371ba1bdp1c8e25jsnae2227b6fc1b'
+key = config.ingredients.key;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {

@@ -2,9 +2,25 @@ extends layout
 
 block content
   h1= title
-  p Recipe Results:
+  p
+    b Recipe Results:
   div
-    table
+    table(style='width:100%', border='1')
         tbody
+            tr 
+                th Id
+                th Title
+                th Image
+                th Image Type
+                th Used Ingredient Count
+                th Missed Ingredient Count
+                th Likes
             each recipe in body
-                tr #{recipe.title} <br><br>
+                tr 
+                    td #{recipe.id} 
+                    td #{recipe.title} 
+                    td #{recipe.image}
+                    td #{recipe.imageType}
+                    td #{recipe.usedIngredientCount}
+                    td #{recipe.missedIngredientCount}
+                    td #{recipe.likes}

@@ -14,10 +14,29 @@ router.get('/', function(req, res, next) {
 });
 
 /* POST ingredients list for search */
-router.post('/', (req, res) => {
+router.post('/', function(req, response, next) {
   console.log(req.body.ingredients)
-  response = getRecipe(req.body.ingredients)
-  res.send(response);
+  //response = getRecipe(req.body.ingredients);
+
+  qs = {"ingredients": req.body.ingredients};
+
+  request.get({headers: {"X-RapidAPI-Key": key},
+  url:"https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients?",
+  qs: qs, json: true}, (err, res, body) => {
+
+    if (err) { return console.log(err); }
+    console.log(body);
+
+    response.render('results', {body: body, title: 'CS411Lab5Group1'});
+  });
+  /*
+  setTimeout(function() {
+    console.log(response);
+  }, 5000);*/
+  
+  //obj = JSON.parse(response);
+
+  //Send the results to be rendered with the object
 
 });
 
@@ -37,7 +56,6 @@ function getRecipe(ingredientList){
 
     if (err) { return console.log(err); }
     console.log(body);
-
     return body;
 });
 }

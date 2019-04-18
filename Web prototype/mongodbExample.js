@@ -1,6 +1,7 @@
 const mongo = require('mongodb').MongoClient
 const url = 'mongodb://localhost:27017'
 // initialize database, be sure you have installed mongodb; also, after installing mongodb, type "npm install mongodb" in terminal.
+// For actual running, mongodb should be online on your pc
 mongo.connect(url, {useNewUrlParser: true}, (err, client) => {
     if (err) {
       console.error(err)

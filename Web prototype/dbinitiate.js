@@ -5,11 +5,10 @@ mongo.connect(url, {useNewUrlParser: true}, (err, client) => {
       console.error(err)
       return
     }
-    // create database "exp"
     const db = client.db('Team1');
-    // create collection "example"
     const collection = db.collection("Users");
-    // end connection
+    // Keep the collection available
+    collection.insertOne({name: 'abk'},(err, result) => {})
     client.close()
 })
 

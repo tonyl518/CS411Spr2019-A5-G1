@@ -1,0 +1,8 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+
+  form(method = 'GET' action = '/login')
+    button(type="submit") Login With Spotify

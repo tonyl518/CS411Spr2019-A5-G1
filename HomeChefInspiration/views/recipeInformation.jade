@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  h1= title
+  p
+    b #{recTitle}
+
+  p Prep Time: #{recTime} minutes
+
+
+  each ingredient in recIngredients
+    p - #{ingredient.originalString}
+  p
+    b Instructions 
+  p #{recInstructions}
+
+  form(method = 'POST' action = '/createPlaylist')
+    button.btn.btn-primary(type='submit') Generate Playlist
+

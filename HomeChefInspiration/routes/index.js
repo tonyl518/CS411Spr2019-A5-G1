@@ -208,10 +208,11 @@ router.post('/createPlaylist', function(req, response, next) {
   //See if Spotify token expired, if so, refresh!
   //Query database for genres they like
     //Pick random genre
-    let selectedGenre = 'jazz';
+    let selectedGenre = "jazz";
     let RecipeName = 'ThisRecipeFire';
     let url = 'https://api.spotify.com/v1/users/' + user_id + '/playlists';
     console.log(url);
+    var trackResults = [];
   //If no genres, reply with need to fill out profile message
   //Make playlist on their account with name of recipe
   var options = { method: 'POST',
@@ -229,68 +230,108 @@ router.post('/createPlaylist', function(req, response, next) {
     console.log(body);
 
     //New playlist ID
-    let newPlaylistID = body['id'];
+    let newPlaylistID = body.id;
 
     //Get playlist ID
     //Do a search by selected genre for 250 songs, shuffle. 
     var i = 0;
-    for (i = 0; i < 250; i + 50){
-      var options = { method: 'POST',
+    var counter = 0;
+    for (i = 0; i <= 250; i +=50){
+      console.log("I === " + i);
+      var offset = i.toString();
+      var options = { method: 'GET',
       url: 'https://api.spotify.com/v1/search',
-      qs: {q: 'genre: ' + selectedGenre, limit: '50', offset: i, type: 'track'},
+      qs: {q: "genre: " + selectedGenre, limit: '50', offset: offset, type: 'track'},
       headers: 
       {
-        Authorization: 'Bearer ' + access_token } };
+        Authorization: 'Bearer ' + access_token },
+        json: true };
       request(options, function (error, response, body) {
         if (error) throw new Error(error);
       
         console.log(body);
-
-        var arrayLength = body['tracks']['items'].length;
+        var arrayLength = body.tracks["items"].length;
         for(i = 0; i < arrayLength; i++){
-              trackResults.append(body['tracks']['items'][i]);
+              trackResults.push(body.tracks["items"][i]);
         }
+
+
+        //If we have finished our final call
+        if(counter === 5){
+          trackIDs = [];
+          //While time <= cook time of recipe, keep adding songs from this list to track IDs to add to playlist
+          i = 0;
+          var totalTime = 0;
+          //TODO: GET RID OF HARD CODE
+          var cookTime = 30; 
+          while(totalTime <= cookTime){
+            console.log("RESULT ID:", trackResults[i]["uri"]);
+            //Append song to list of track IDs
+              trackIDs.push(trackResults[i]["uri"]);
+            //Add time of song to total time & convert to minutes
+              var trackLength = trackResults[i].duration_ms / 60000;
+              totalTime += trackLength;
+            //Next item on list
+              i++;
+
+          }
+
+          //Make request to add these track IDs to new playlist
+          
+          options = { method: 'POST',
+          url: 'https://api.spotify.com/v1/playlists/' + newPlaylistID + '/tracks',
+          body: {'uris': trackIDs},
+          headers: 
+          {
+            Authorization: 'Bearer ' + access_token, 'Content-Type': 'application/json', Accept: "application/json" },
+          json: true };
+          request(options, function (error, response, body) {
+            if (error) throw new Error(error);
+          
+            console.log(body);
+
+          //Send ID back to display widget
+
+          });
+        }
+
+
+        counter++;
       });
-    }       
-    trackIDs = [];
+        
+        
+    }
+        
 
         //Shuffle track results
         //np.random.shuffle(trackResults)
         //np.random.shuffle(trackResults)
           
         //Get track IDs
-          //for i in range(len(trackResults)):
-            //trackIDs.append(trackResults[i]['id'])
+          //for i intrackResults)):
+            //trackIDs.push(trackResults[i]['id'])
+        /*
+        //While time <= cook time of recipe, keep adding songs from this list to track IDs to add to playlist
+        i = 0;
+        var totalTime = 0;
+        //TODO: GET RID OF HARD CODE
+        var cookTime = 30; 
+        while(totalTime <= cookTime){
+          console.log("RESULT ID:", trackResults[i]["id"]);
+          //Append song to list of track IDs
+            trackIDs.push(trackResults[i]["id"]);
+          //Add time of song to total time & convert to minutes
+            var trackLength = trackResults[i].duration_ms * 60000;
+            totalTime += trackLength;
+          //Next item on list
+            i++;
+        }*/
 
-    //While time <= cook time of recipe, keep adding songs from this list to track IDs to add to playlist
-    i = 0;
-    var totalTime = 0;
-    //TODO: GET RID OF HARD CODE
-    var cookTime = 30; 
-    while(totalTime <= cookTime){
-      //Append song to list of track IDs
-        trackIDs.append(trackResults[i]['id']);
-      //Add time of song to total time & convert to minutes
-        var trackLength = trackResults[i]['duration_ms'] * 60000;
-        totalTime += trackLength;
-      //Next item on list
-        i++;
-    }
-    //Make request to add these track IDs to new playlist
-    options = { method: 'POST',
-    url: 'https://api.spotify.com/v1/playlists/' + newPlaylistID + '/tracks',
-    body: {'uris': trackIDs},
-    headers: 
-    {
-      Authorization: 'Bearer ' + access_token, 'Content-Type': 'application/json' } };
-    request(options, function (error, response, body) {
-      if (error) throw new Error(error);
+
+        
+     
     
-      console.log(body);
-
-    //Send ID back to display widget
-
-  });
+    
 
     
 

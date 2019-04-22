@@ -20,6 +20,7 @@ var access_token = null;
 var refresh_token = null;
 var user_id = '';
 
+
 var generateRandomString = function(length) {
   var text = '';
   var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -189,17 +190,9 @@ router.post('/getRecipes', function(req, response, next) {
       if (err) { return console.log(err); }
       console.log(body);
 
-      response.render('recipeInformation', {recTitle: body.title, recTime: body.readyInMinutes, recInstructions: body.instructions, recIngredients: body.extendedIngredients, title: 'CS411Lab5Group1'});
+      response.render('recipeInformation', {recipe: body, msg: null, generated: null, title: 'CS411Lab5Group1'});
 
     });
-  /*
-  setTimeout(function() {
-    console.log(response);
-  }, 5000);*/
-  
-  //obj = JSON.parse(response);
-
-  //Send the results to be rendered with the object
 
   });
 
@@ -207,10 +200,24 @@ router.post('/getRecipes', function(req, response, next) {
 router.post('/createPlaylist', function(req, response, next) {
  //Refresh token
  //Make the playlist
+ var chosenRecipe = JSON.parse(req.body.playlistBtn);
+ console.log("BODY OF RECIPE:", chosenRecipe);
  var genre = 'jazz';
- var cookTime = 30;
- var recipeName = 'ThisFireRecipe';
- createPlaylistHandler(genre, cookTime, recipeName, access_token, user_id);
+ var cookTime = chosenRecipe.readyInMinutes;
+ var recipeName = chosenRecipe.title;
+ var success = createPlaylistHandler(genre, cookTime, recipeName, access_token, user_id);
+
+ var msg = null;
+ var generated = null;
+ if(success){
+  generated = 1;
+  msg = "Success! The playlist is now on your account";
+ }else{
+   generated = 555;
+   msg = "Error. Please contact support or come back later";
+ }
+
+ response.render('recipeInformation', {recipe: chosenRecipe, msg: msg, generated: generated,title: 'CS411Lab5Group1'});
 });
 
  module.exports = router;
@@ -253,7 +260,7 @@ async function createPlaylistHandler(genre, cookTime, recipeName, access_token, 
   console.log("PROMISE 1 RESOLVED");
   const searchResults = await searchSongs(genre, access_token, user_id);
   console.log("PROMISE 2 RESOLVED");
-  console.log("SEARCH RESULTS: ", searchResults);
+  //console.log("SEARCH RESULTS: ", searchResults);
   const idArray = await narrowDownSongs(searchResults, cookTime);
   console.log("NEXT PROMISE RESOLVED");
   const addSongsResults = await addSongsToPlaylist(idArray, playlistID, access_token);
@@ -281,7 +288,7 @@ function createNewPlaylist(recipeName, access_token, user_id){
     request(options, function (error, response, body) {
       if (error) { return console.log(error); }
 
-      console.log(body);
+      //console.log(body);
 
       //New playlist ID
       let newPlaylistID = body.id;
@@ -304,7 +311,7 @@ function searchSongs(genre, access_token, user_id){
     var searchResultsArray = new Array();
     for(i = 0; i <=250; i += 50){
       var offset = i.toString()
-      console.log("OFFSET: ", offset);
+      //console.log("OFFSET: ", offset);
       var options = { method: 'GET',
       url: 'https://api.spotify.com/v1/search',
       qs: {q: "genre: " + genre, limit: '50', offset: offset, type: 'track'},
@@ -319,7 +326,7 @@ function searchSongs(genre, access_token, user_id){
           
 
         var searchResults = body.tracks["items"];
-        console.log(body);
+        //console.log(body);
         //return(searchResultsArray);
 
         for(j = 0; j < 50; j++){
@@ -374,7 +381,7 @@ function addSongsToPlaylist(idArray, newPlaylistID, access_token){
             request(options, function (error, response, body) {
               if (error) throw new Error(error);
             
-              console.log(body);
+              //console.log(body);
 
               resolve(1);
             });

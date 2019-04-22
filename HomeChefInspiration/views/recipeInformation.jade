@@ -3,17 +3,20 @@ extends layout
 block content
   h1= title
   p
-    b #{recTitle}
+    b #{recipe.title}
 
-  p Prep Time: #{recTime} minutes
+  p Prep Time: #{recipe.readyInMinutes} minutes
 
 
-  each ingredient in recIngredients
+  each ingredient in recipe.extendedIngredients
     p - #{ingredient.originalString}
   p
     b Instructions 
-  p #{recInstructions}
+  p #{recipe.instructions}
 
-  form(method = 'POST' action = '/createPlaylist')
-    button.btn.btn-primary(type='submit') Generate Playlist
-
+  if generated
+    p(id = "playlistSuccessMsg") #{msg}
+  else
+    - var json = JSON.stringify(recipe);
+    form(method = 'POST' action = '/createPlaylist')
+      button.btn.btn-primary(type='submit', value = json, name = 'playlistBtn') Generate Playlist

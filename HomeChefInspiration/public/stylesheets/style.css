@@ -21,3 +21,7 @@ a {
 #recButton:hover { 
   color: rgb(243, 119, 0);
 }
+
+p#playlistSuccessMsg{
+  color: rgb(243, 119, 0);
+}

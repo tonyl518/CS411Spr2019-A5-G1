@@ -205,137 +205,12 @@ router.post('/getRecipes', function(req, response, next) {
 
 //Create playlist 
 router.post('/createPlaylist', function(req, response, next) {
-  //See if Spotify token expired, if so, refresh!
-  //Query database for genres they like
-    //Pick random genre
-    let selectedGenre = "jazz";
-    let RecipeName = 'ThisRecipeFire';
-    let url = 'https://api.spotify.com/v1/users/' + user_id + '/playlists';
-    console.log(url);
-    var trackResults = [];
-  //If no genres, reply with need to fill out profile message
-  //Make playlist on their account with name of recipe
-  var options = { method: 'POST',
-  url: url,
-  qs: { '': '' },
-  body: { 'name': RecipeName },
-  headers: 
-   { 'Content-Type': 'application/json',
-     Authorization: 'Bearer ' + access_token },
-  json: true };
-
-  request(options, function (error, response, body) {
-    if (error) { return console.log(error); }
-
-    console.log(body);
-
-    //New playlist ID
-    let newPlaylistID = body.id;
-
-    //Get playlist ID
-    //Do a search by selected genre for 250 songs, shuffle. 
-    var i = 0;
-    var counter = 0;
-    for (i = 0; i <= 250; i +=50){
-      console.log("I === " + i);
-      var offset = i.toString();
-      var options = { method: 'GET',
-      url: 'https://api.spotify.com/v1/search',
-      qs: {q: "genre: " + selectedGenre, limit: '50', offset: offset, type: 'track'},
-      headers: 
-      {
-        Authorization: 'Bearer ' + access_token },
-        json: true };
-      request(options, function (error, response, body) {
-        if (error) throw new Error(error);
-      
-        console.log(body);
-        var arrayLength = body.tracks["items"].length;
-        for(i = 0; i < arrayLength; i++){
-              trackResults.push(body.tracks["items"][i]);
-        }
-
-
-        //If we have finished our final call
-        if(counter === 5){
-          trackIDs = [];
-          //While time <= cook time of recipe, keep adding songs from this list to track IDs to add to playlist
-          i = 0;
-          var totalTime = 0;
-          //TODO: GET RID OF HARD CODE
-          var cookTime = 30; 
-          while(totalTime <= cookTime){
-            console.log("RESULT ID:", trackResults[i]["uri"]);
-            //Append song to list of track IDs
-              trackIDs.push(trackResults[i]["uri"]);
-            //Add time of song to total time & convert to minutes
-              var trackLength = trackResults[i].duration_ms / 60000;
-              totalTime += trackLength;
-            //Next item on list
-              i++;
-
-          }
-
-          //Make request to add these track IDs to new playlist
-          
-          options = { method: 'POST',
-          url: 'https://api.spotify.com/v1/playlists/' + newPlaylistID + '/tracks',
-          body: {'uris': trackIDs},
-          headers: 
-          {
-            Authorization: 'Bearer ' + access_token, 'Content-Type': 'application/json', Accept: "application/json" },
-          json: true };
-          request(options, function (error, response, body) {
-            if (error) throw new Error(error);
-          
-            console.log(body);
-
-          //Send ID back to display widget
-
-          });
-        }
-
-
-        counter++;
-      });
-        
-        
-    }
-        
-
-        //Shuffle track results
-        //np.random.shuffle(trackResults)
-        //np.random.shuffle(trackResults)
-          
-        //Get track IDs
-          //for i intrackResults)):
-            //trackIDs.push(trackResults[i]['id'])
-        /*
-        //While time <= cook time of recipe, keep adding songs from this list to track IDs to add to playlist
-        i = 0;
-        var totalTime = 0;
-        //TODO: GET RID OF HARD CODE
-        var cookTime = 30; 
-        while(totalTime <= cookTime){
-          console.log("RESULT ID:", trackResults[i]["id"]);
-          //Append song to list of track IDs
-            trackIDs.push(trackResults[i]["id"]);
-          //Add time of song to total time & convert to minutes
-            var trackLength = trackResults[i].duration_ms * 60000;
-            totalTime += trackLength;
-          //Next item on list
-            i++;
-        }*/
-
-
-        
-     
-    
-    
-
-    
-
-  });
+ //Refresh token
+ //Make the playlist
+ var genre = 'jazz';
+ var cookTime = 30;
+ var recipeName = 'ThisFireRecipe';
+ createPlaylistHandler(genre, cookTime, recipeName, access_token, user_id);
 });
 
  module.exports = router;
@@ -346,7 +221,7 @@ router.post('/createPlaylist', function(req, response, next) {
   var authOptions = {
     url: 'https://accounts.spotify.com/api/token',
     headers: { 'Authorization': 'Basic ' + (new Buffer(config.spotify.cli_id + ':' + config.spotify.cli_secret).toString('base64')) },
-    form: {
+    form: { 
       grant_type: 'refresh_token',
       refresh_token: refresh_token
     },
@@ -372,3 +247,137 @@ router.post('/createPlaylist', function(req, response, next) {
     this.setState({ accessTokenAvailable: true });
   }
 }*/
+
+async function createPlaylistHandler(genre, cookTime, recipeName, access_token, user_id){
+  const playlistID = await createNewPlaylist(recipeName, access_token, user_id);
+  console.log("PROMISE 1 RESOLVED");
+  const searchResults = await searchSongs(genre, access_token, user_id);
+  console.log("PROMISE 2 RESOLVED");
+  console.log("SEARCH RESULTS: ", searchResults);
+  const idArray = await narrowDownSongs(searchResults, cookTime);
+  console.log("NEXT PROMISE RESOLVED");
+  const addSongsResults = await addSongsToPlaylist(idArray, playlistID, access_token);
+  return addSongsResults;
+}
+
+function createNewPlaylist(recipeName, access_token, user_id){
+  //Creates a new playlist on the user's account and returns the playlist ID
+  let url = 'https://api.spotify.com/v1/users/' + user_id + '/playlists';
+  console.log(url);
+
+  //If no genres, reply with need to fill out profile message
+  //Make playlist on their account with name of recipe
+  var options = { method: 'POST',
+  url: url,
+  qs: { '': '' },
+  body: { 'name': recipeName },
+  headers: 
+   { 'Content-Type': 'application/json',
+     Authorization: 'Bearer ' + access_token },
+  json: true };
+
+  return new Promise((resolve, reject) => {
+
+    request(options, function (error, response, body) {
+      if (error) { return console.log(error); }
+
+      console.log(body);
+
+      //New playlist ID
+      let newPlaylistID = body.id;
+
+      resolve(newPlaylistID);
+
+    });
+  })
+
+}
+
+function searchSongs(genre, access_token, user_id){
+  //Searches songs based on the genre the user prefers
+  //Get playlist ID
+    //Do a search by selected genre for 250 songs, shuffle. 
+  var i;
+  var j;
+  var counter = 0;
+  return new Promise((resolve, reject) => {
+    var searchResultsArray = new Array();
+    for(i = 0; i <=250; i += 50){
+      var offset = i.toString()
+      console.log("OFFSET: ", offset);
+      var options = { method: 'GET',
+      url: 'https://api.spotify.com/v1/search',
+      qs: {q: "genre: " + genre, limit: '50', offset: offset, type: 'track'},
+      headers: 
+      {
+        Authorization: 'Bearer ' + access_token },
+        json: true };
+  
+
+      request(options, function (error, response, body) {
+        if (error) throw new Error(error);
+          
+
+        var searchResults = body.tracks["items"];
+        console.log(body);
+        //return(searchResultsArray);
+
+        for(j = 0; j < 50; j++){
+          searchResultsArray.push(searchResults[j]);
+        } 
+
+        if(counter === 5){
+          console.log("finishing...");
+          resolve(searchResultsArray);
+        }
+        
+        counter++;
+      });
+    }
+  });
+  
+  
+}
+
+function narrowDownSongs(songList, cookTime){
+  return new Promise((resolve, reject) => {
+    var totalTime = 0;
+    var trackIDs = new Array();
+    var i = 0;
+    while((totalTime <= cookTime) && (i < songList.length)){
+      console.log("RESULT ID:", songList[i]["uri"]);
+      //Append song to list of track IDs
+      trackIDs.push(songList[i]["uri"]);
+      //Add time of song to total time & convert to minutes
+      var trackLength = songList[i].duration_ms / 60000;
+      totalTime += trackLength;
+      //Next item on list
+      i++;
+
+    }
+
+    resolve(trackIDs);
+  });
+
+}
+
+function addSongsToPlaylist(idArray, newPlaylistID, access_token){
+  //Adds songs to the new playlist created
+  return new Promise((resolve, reject) => {
+    options = { method: 'POST',
+            url: 'https://api.spotify.com/v1/playlists/' + newPlaylistID + '/tracks',
+            body: {'uris': idArray},
+            headers: 
+            {
+              Authorization: 'Bearer ' + access_token, 'Content-Type': 'application/json', Accept: "application/json" },
+            json: true };
+            request(options, function (error, response, body) {
+              if (error) throw new Error(error);
+            
+              console.log(body);
+
+              resolve(1);
+            });
+          });
+
+}

@@ -1,8 +1,7 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  p Welcome #{title}
 
   form(method = 'POST' action = '/getRecipes')
     label(for='ingredients') Enter ingredients separated by commas: 

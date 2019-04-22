@@ -1,4 +1,5 @@
 var express = require('express');
+var expressSession = require('express-session');
 var router = express.Router();
 const config = require('../config.json');
 var querystring = require('querystring');
@@ -15,10 +16,9 @@ let redirect_uri = 'http://localhost:3000/callback'
 key = config.ingredients.key;
 host = config.ingredients.host;
 
-//Access token & refresh token global
+//Access token & refresh token global -- TO BE DELETED
 var access_token = null;
 var refresh_token = null;
-var user_id = '';
 
 
 var generateRandomString = function(length) {
@@ -34,20 +34,14 @@ var generateRandomString = function(length) {
 
 
 /* TODO:
-  -Query database & add models folder and files
+  -Query database 
   -Format buttons for response
   -Put refresh button on search results page and make global variable that is incremented by 5 every time we do a refresh & if new search it starts from 0 again
   -Display widget
   -Make sure recipe still displayed with widget
-  -From recipe page, pass cook time
   -Separate routing
   -Whenever we use spotify, check if the tokens have expired. If so, refresh them
   -Store tokens, expiry time in database with user
-
-  -CREATE PLAYLIST
-    FIND UR ISSUES
-    -Try API calls for searching
-    -Try API calls for adding tracks to playlist
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -55,13 +49,14 @@ router.get('/', function(req, res, next) {
 });
 
 
-//Login with spotify
+/* GET login */
 router.get('/login', function(req, res, next) {
 
   var state = generateRandomString(16);
   res.cookie(stateKey, state);
 
-  // your application requests authorization
+  //Application requests authorization
+  //Scopes we ask the User for
   var scope = 'user-read-private playlist-modify-public playlist-modify-private';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
@@ -74,75 +69,21 @@ router.get('/login', function(req, res, next) {
 });
 
 /* GET Callback From login */
-router.get('/callback?', function(req, res, next){
+router.get('/callback?', async function(req, res, next){
   console.log("REQ ", req.query);
-
+  
   var code = req.query.code || null;
-  var state = req.query.state || null;
-  var storedState = req.cookies ? req.cookies[stateKey] : null;
 
-  if (state === null || state !== storedState) {
-    res.redirect('/#' +
-      querystring.stringify({
-        error: 'state_mismatch'
-      }));
-  } else {
-    res.clearCookie(stateKey);
-    var authOptions = {
-      url: 'https://accounts.spotify.com/api/token',
-      form: {
-        code: code,
-        redirect_uri: redirect_uri,
-        grant_type: 'authorization_code'
-      },
-      headers: {
-        Authorization: 'Basic ' + (new Buffer(config.spotify.cli_id + ':' + config.spotify.cli_secret).toString('base64'))
-      },
-      json: true
-    };
+  //Handle exchanging code for token, storing new user in database or updating old user's tokens
+  const userInfo = await loginHandler(config.spotify.cli_id, config.spotify.cli_secret, redirect_uri, code);
+
+  //Store current user globally
+  req.session.currentUser = userInfo.id;
   
-  
-    //Exchange access code for token
-    request.post(authOptions, function(error, response, body) {
-      if (error || response.statusCode != 200) { return console.log(error); }
-      //Store the access token, refresh token, and time of expiry in the database with user information
-      access_token = body.access_token;
-      refresh_token = body.refresh_token;
-      const expirationTime = new Date().getTime() + body.expiresIn * 1000;
-      console.log('Access Token ', access_token)
+  //Render the landing page
+  res.render('landingPage', { title: userInfo.name });
 
-      //Get spotify ID profile info & store in DB
-      var authParam = 'Bearer ' + access_token;
-      console.log(authParam);
-      var profOptions = { method: 'GET',
-        url: 'https://api.spotify.com/v1/me',
-        qs: { '': '' },
-        headers: {
-          Authorization: authParam
-        },
-        json: true
-      };
 
-      var name = '';
-      request(profOptions, function(error, response, body) {
-        if (error || response.statusCode != 200) { return console.log(error); }
-        console.log(body);
-        if(body.display_name != null){
-          name = body.display_name;
-        }
-
-        user_id = body.id;
-        console.log("User ID ",user_id);
-        res.render('landingPage', { title: name });
-      });
-
-    });
-
-    
-    
-    
-  
-  }
 });
 
 /* POST ingredients list for search */
@@ -174,15 +115,18 @@ router.post('/getRecipes', function(req, response, next) {
 
 
   /*POST View Recipe*/
-
   router.post('/viewRecipe', function(req, response, next){
     console.log("RECIPE ID: ", req.body.recButton);
+    //Recipe ID
     var rec_id = req.body.recButton;
+
+    //Form query string
     qs = {"id": rec_id};
     var url = 'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/' + rec_id;
     url+= '/information';
     console.log(url);
 
+    //Make request for recipe information
     request.get({headers: {'X-RapidAPI-Key': key, 'X-RapidAPI-Host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'},
     url: url,
     qs: qs, json: true}, (err, res, body) => {
@@ -197,7 +141,7 @@ router.post('/getRecipes', function(req, response, next) {
   });
 
 //Create playlist 
-router.post('/createPlaylist', function(req, response, next) {
+router.post('/createPlaylist', async function(req, response, next) {
  //Refresh token
  //Make the playlist
  var chosenRecipe = JSON.parse(req.body.playlistBtn);
@@ -205,7 +149,7 @@ router.post('/createPlaylist', function(req, response, next) {
  var genre = 'jazz';
  var cookTime = chosenRecipe.readyInMinutes;
  var recipeName = chosenRecipe.title;
- var success = createPlaylistHandler(genre, cookTime, recipeName, access_token, user_id);
+ var success = await createPlaylistHandler(genre, cookTime, recipeName, access_token, req.session.currentUser);
 
  var msg = null;
  var generated = null;
@@ -216,7 +160,7 @@ router.post('/createPlaylist', function(req, response, next) {
    generated = 555;
    msg = "Error. Please contact support or come back later";
  }
-
+ //Render recipe page with success message
  response.render('recipeInformation', {recipe: chosenRecipe, msg: msg, generated: generated,title: 'CS411Lab5Group1'});
 });
 
@@ -254,7 +198,8 @@ router.post('/createPlaylist', function(req, response, next) {
     this.setState({ accessTokenAvailable: true });
   }
 }*/
-
+/*----------------- HANDLER FUNCTIONS, API CALL FUNCTIONS ----------------------*/
+/*-------------------CREATE A NEW PLAYLIST-------------------------------*/
 async function createPlaylistHandler(genre, cookTime, recipeName, access_token, user_id){
   const playlistID = await createNewPlaylist(recipeName, access_token, user_id);
   console.log("PROMISE 1 RESOLVED");
@@ -302,8 +247,7 @@ function createNewPlaylist(recipeName, access_token, user_id){
 
 function searchSongs(genre, access_token, user_id){
   //Searches songs based on the genre the user prefers
-  //Get playlist ID
-    //Do a search by selected genre for 250 songs, shuffle. 
+  //Do a search by selected genre for 250 songs, shuffle. 
   var i;
   var j;
   var counter = 0;
@@ -347,6 +291,7 @@ function searchSongs(genre, access_token, user_id){
 }
 
 function narrowDownSongs(songList, cookTime){
+  //Take search results and narrow down to playlist of length of cook time
   return new Promise((resolve, reject) => {
     var totalTime = 0;
     var trackIDs = new Array();
@@ -388,3 +333,90 @@ function addSongsToPlaylist(idArray, newPlaylistID, access_token){
           });
 
 }
+
+/*-------------------------------- LOGIN ---------------------------------------------*/
+async function loginHandler(cli_id, cli_secret, redirect_uri, code){
+  //Exchange access code for token
+  const tokens = await exchangeForToken(code, redirect_uri, cli_id, cli_secret);
+  //Get user profile information
+  const userInfo = await getUserProfile(tokens.access_token);
+  //Search for user ID 
+  /*
+  const userFound = await searchForUser(userInfo.id);
+  //If new user, store in DB
+  if(userFound){
+    const userUpdate = updateUser(userInfo.id, {access_token: tokens.access_token, expirationTime: tokens.expirationTime, refresh_token: tokens.refresh_token});
+  }else{
+  //If not new user, update refresh token, access token, and expiry_time
+    const userCreate = createUser(userInfo.id, {access_token: tokens.access_token, expirationTime: tokens.expirationTime, refresh_token: tokens.refresh_token})
+  }
+  */
+
+  return {id: userInfo.id, name: userInfo.name};
+
+}
+
+function exchangeForToken(code, redirect_uri, cli_id, cli_secret){
+  return new Promise((resolve, reject) => {
+    var authOptions = {
+      url: 'https://accounts.spotify.com/api/token',
+      form: {
+        code: code,
+        redirect_uri: redirect_uri,
+        grant_type: 'authorization_code'
+      },
+      headers: {
+        Authorization: 'Basic ' + (new Buffer(config.spotify.cli_id + ':' + config.spotify.cli_secret).toString('base64'))
+      },
+      json: true
+    };
+
+
+    //Exchange access code for token
+    request.post(authOptions, function(error, response, body) {
+      if (error || response.statusCode != 200) { return console.log(error); }
+      //Store the access token, refresh token, and time of expiry in the database with user information
+      access_token = body.access_token;
+      refresh_token = body.refresh_token;
+      const expirationTime = new Date().getTime() + body.expiresIn * 1000;
+      console.log('Access Token ', access_token)
+
+      resolve({access_token: access_token, refresh_token: refresh_token, expirationTime: expirationTime});
+    });
+  });
+
+}
+
+function getUserProfile(access_token){
+  //Get spotify ID profile info
+  return new Promise((resolve, reject) => {
+    var authParam = 'Bearer ' + access_token;
+    console.log(authParam);
+    var profOptions = { method: 'GET',
+      url: 'https://api.spotify.com/v1/me',
+      qs: { '': '' },
+      headers: {
+        Authorization: authParam
+      },
+      json: true
+    };
+
+    var name = '';
+    request(profOptions, function(error, response, body) {
+      if (error || response.statusCode != 200) { return console.log(error); }
+      console.log(body);
+      if(body.display_name != null){
+        name = body.display_name;
+      }
+
+      resolve({name: name, id: body.id});
+    });
+  });
+}
+
+/*---------------------------------DATABASE RELATED -----------------------------------*/
+//Search for user -- based on current user id
+
+//Update user -- based on current user id, object of key value pairs to update
+
+//Save new user -- object of key value pairs & id

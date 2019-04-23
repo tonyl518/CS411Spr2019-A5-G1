@@ -64,25 +64,32 @@ router.get('/login', function(req, res, next) {
       client_id: config.spotify.cli_id,
       scope: scope,
       redirect_uri: redirect_uri,
-      state: state
+      state: state,
+      show_dialog: true
     }));
 });
 
 /* GET Callback From login */
 router.get('/callback?', async function(req, res, next){
   console.log("REQ ", req.query);
-  
-  var code = req.query.code || null;
 
-  //Handle exchanging code for token, storing new user in database or updating old user's tokens
-  const userInfo = await loginHandler(config.spotify.cli_id, config.spotify.cli_secret, redirect_uri, code);
 
-  //Store current user globally
-  req.session.currentUser = userInfo.id;
-  console.log("CURR USER : ", req.session.currentUser);
-  
-  //Render the landing page
-  res.render('landingPage', { title: userInfo.name });
+  if(req.query.error){
+    res.render('index', { title: 'Emma\'s Example Spotify App!' });
+  }else{
+    var code = req.query.code || null;
+
+    //Handle exchanging code for token, storing new user in database or updating old user's tokens
+    const userInfo = await loginHandler(config.spotify.cli_id, config.spotify.cli_secret, redirect_uri, code);
+
+    //Store current user globally
+    req.session.currentUser = userInfo.id;
+    console.log("CURR USER : ", req.session.currentUser);
+    
+    //Render the landing page
+    res.render('landingPage', { title: userInfo.name });
+
+  }
 
 
 });

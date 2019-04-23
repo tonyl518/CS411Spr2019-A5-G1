@@ -84,12 +84,12 @@ router.get('/callback?', async function(req, res, next){
     const userInfo = await loginHandler(config.spotify.cli_id, config.spotify.cli_secret, redirect_uri, code);
 
     //Store current user globally
-    req.session.currentUser = userInfo.id;
-    console.log("CURR USER : ", req.session.currentUser);
+    req.session.currentUser = userInfo.usr_id;
+    console.log("CURR USER : ", userInfo);
     
     //Render the landing page
     
-    if (userInfo.diets || userInfo.intolerances || userInfo.genres){
+    if (userInfo.diets.length != 0 || userInfo.intolerances.length!=0 || userInfo.genres!=0){
       res.render('landingPage', { title: "Registered User" })
     }
     else{
@@ -101,11 +101,29 @@ router.get('/callback?', async function(req, res, next){
 });
 router.post('/building', async function(req, res, next){
   console.log("Preferences: ", req.body);
-  const Intolerances = req.body.Intolerance;
-  const Diets = req.body.Diet;
-  const Genre = req.body.Genre_preference;
-  const userInfo = await searchForUser(req.session.currentUser);
+
+  if (req.body.Intolerance){
+    var Intolerances = req.body.Intolerance;
+  }
+  else{
+    var Intolerances = []
+  }
+  if (req.body.Diet){
+    var Diets = req.body.Diet;
+  }
+  else{
+    var Diets = []
+  }
+  if (req.body.Genre_preference){
+    var Genre = req.body.Genre_preference;
+  }
+  else{
+    var Genre = []
+  }
+
   
+  const userInfo = await searchForUser(req.session.currentUser);
+  console.log("indexed user:", userInfo);
   const newUser = {usr_id: userInfo.usr_id, diets: Diets, intolerances: Intolerances, genres: Genre, access_token: userInfo.access_token, expiry_time_ms: userInfo.expirationTime, refresh_token: userInfo.refresh_token};
   console.log("abouttoupdate: ", newUser);
   const resu = await updateUser(req.session.currentUser, newUser);
@@ -470,8 +488,8 @@ async function loginHandler(cli_id, cli_secret, redirect_uri, code){
     const userCreate = await createUser(userInfo.usr_id, {usr_id: userInfo.usr_id, access_token: tokens.access_token, expiry_time_ms: tokens.expirationTime, refresh_token: tokens.refresh_token});
   }
   
-
-  return {id: userInfo.usr_id, name: userInfo.name};
+  const finalUser = await searchForUser(userInfo.usr_id);
+  return finalUser;
 
 }
 

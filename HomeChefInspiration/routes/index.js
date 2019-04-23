@@ -103,30 +103,11 @@ router.get('/logout', function (req, res){
 });
 
 /* POST ingredients list for search */
-router.post('/getRecipes', function(req, response, next) {
-  console.log(req.body.ingredients);
+router.post('/getRecipes', async function(req, response, next) {
 
-  qs = {includeIngredients: req.body.ingredients, limitLicense: false, offset: '0', number: '5'};
+  const recipeResults = await recipeSearchHandler(req.body.ingredients, req.session.currentUser, key, host);
 
-  //Query database for diets and intolerances
-
-  //Convert to strings separated by commas
-
-  //If not empty diets, add to query string
-
-  //If not empty intolerances, add to query string
-
-  //Get the recipes from the API
-  request.get({headers: {"X-RapidAPI-Key": key, "X-RapidAPI-Host": host },
-  url:'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/searchComplex',
-  qs: qs, json: true}, (err, res, body) => {
-
-    if (err) { return console.log(err); }
-    console.log(body);
-
-    //Render the results
-    response.render('recipeResults', {body: body, title: 'CS411Lab5Group1'});
-  });
+  response.render('recipeResults', {body: recipeResults, title: 'CS411Lab5Group1'});
 });
 
 
@@ -162,10 +143,11 @@ router.post('/createPlaylist', async function(req, response, next) {
  //Make the playlist
  var chosenRecipe = JSON.parse(req.body.playlistBtn);
  console.log("BODY OF RECIPE:", chosenRecipe);
+ console.log("CURR USER", req.session.currentUser);
  var genre = 'jazz';
  var cookTime = chosenRecipe.readyInMinutes;
  var recipeName = chosenRecipe.title;
- var success = await createPlaylistHandler(genre, cookTime, recipeName, access_token, req.session.currentUser);
+ var success = await createPlaylistHandler(genre, cookTime, recipeName, req.session.currentUser);
 
  var msg = null;
  var generated = null;
@@ -215,8 +197,108 @@ router.post('/createPlaylist', async function(req, response, next) {
   }
 }*/
 /*----------------- HANDLER FUNCTIONS, API CALL FUNCTIONS ----------------------*/
+/*-------------------RECIPE SEARCH---------------------------------*/
+async function recipeSearchHandler(ingredients, id, key, host){
+  const userDoc = await searchForUser(id);
+  const restrictions = await checkForDietsAndIntolerances(userDoc);
+  const recipeList = await searchRecipes(ingredients, restrictions, key, host);
+
+  return recipeList;
+
+}
+
+function checkForDietsAndIntolerances(doc){
+  return new Promise((resolve, reject) => {
+    var intolerances;
+    var diets;
+
+    if(doc.intolerances.length){
+      intolerances = doc.intolerances
+    }else{
+      intolerances = null;
+    }
+
+    if(doc.diets.length){
+      diets = doc.diets
+    }else{
+      diets = null;
+    }
+
+    resolve({diets: diets, intolerances: intolerances});
+  });
+
+}
+
+function searchRecipes(ingredients, restrictions, key, host){
+  //Add diets and intolerances to query string and then search
+  return new Promise((resolve, reject) => {
+    var qs = {includeIngredients: ingredients, limitLicense: false, offset: '0', number: '5'};
+
+    var diets = restrictions.diets;
+    var intolerances = restrictions.intolerances;
+
+    //Convert to strings separated by commas
+    var i;
+    var dietsString = '';
+    var intolerancesString = ''
+
+    //If diets is not null
+    if(diets){
+
+      for(i = 0; i < (diets.length) - 1; i++){
+        dietsString += diets[i];
+        dietsString += ',';
+      }
+
+      //Add last one
+      dietsString += diets[(diets.length)-1];
+
+      console.log("DIETS STRING: ", dietsString);
+
+      //Add to query string
+      qs.diets = dietsString;
+
+    }
+
+    //If intolerances aren't null
+    if(intolerances){
+
+      for(i = 0; i < (intolerances.length) - 1; i++){
+        intolerancesString += intolerances[i];
+        intolerancesString += ',';
+      }
+
+      //Add last one
+      intolerancesString += intolerances[(intolerances.length)-1];
+      console.log("INTOLERANCES STRING: ", intolerancesString);
+
+      //Add to query string
+      qs.intolerances = intolerancesString;
+      
+    }
+
+
+    //Get the recipes from the API
+    request.get({headers: {"X-RapidAPI-Key": key, "X-RapidAPI-Host": host },
+    url:'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/searchComplex',
+    qs: qs, json: true}, (err, res, body) => {
+
+      if (err) { return console.log(err); }
+      console.log(body);
+
+      //Resolve with recipe list
+      resolve(body);
+    });
+  });
+
+}
 /*-------------------CREATE A NEW PLAYLIST-------------------------------*/
-async function createPlaylistHandler(genre, cookTime, recipeName, access_token, user_id){
+async function createPlaylistHandler(genre, cookTime, recipeName, user_id){
+  //Search database for user
+  const userDoc = await searchForUser(user_id);
+  console.log("USER DOC ", userDoc.access_token);
+  const access_token = userDoc.access_token;
+
   const playlistID = await createNewPlaylist(recipeName, access_token, user_id);
   console.log("PROMISE 1 RESOLVED");
   const searchResults = await searchSongs(genre, access_token, user_id);
@@ -285,7 +367,7 @@ function searchSongs(genre, access_token, user_id){
           
 
         var searchResults = body.tracks["items"];
-        //console.log(body);
+        console.log(body);
         //return(searchResultsArray);
 
         for(j = 0; j < 50; j++){

@@ -87,7 +87,7 @@ router.get('/callback?', async function(req, res, next){
     console.log("CURR USER : ", req.session.currentUser);
     
     //Render the landing page
-    res.render('building', { title: userInfo.name });
+    res.render('landingPage', { title: userInfo.name });
 
   }
 

@@ -1,9 +1,13 @@
 extends layout
 
 block content
-  h1= title
+  form(method = 'GET' action = '/home')
+    button.btn.btn-primary(type='submit') Home
   form(method = 'GET' action = '/logout')
     button.btn.btn-primary(type='submit') Logout
+  form(method = 'GET' action = '/editProfile')
+    button.btn.btn-primary(type='submit') Edit Profile
+  h1= title
   p
     b Recipe Results:
   div

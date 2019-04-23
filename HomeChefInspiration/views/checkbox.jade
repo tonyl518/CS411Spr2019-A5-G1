@@ -1,21 +1,53 @@
 extends layout
 
 block content
-    h1= 123
-
-    form(method = 'POST' action = '/free')
+    form(method = 'GET' action = '/home')
+      button.btn.btn-primary(type='submit') Home
+    form(method = 'GET' action = '/logout')
+      button.btn.btn-primary(type='submit') Logout
+    form(method = 'GET' action = '/editProfile')
+      button.btn.btn-primary(type='submit') Edit Profile
+    h1 Edit Your Profile
+    if msg
+        p Success! Profile Updated.
+    form(method = 'POST' action = '/updateProfile')
         h1= id
         fieldset
             legend Please specify your intolerance
             div
-                input(type='checkbox', id='gluten free', name='Intolerance', value='gluten free')
-                label(for='gluten free') Gluten free
+                input(type='checkbox', id='gluten', name='Intolerance', value='gluten')
+                label(for='gluten') Gluten
             div
-                input(type='checkbox', id ='dairy free', name='Intolerance', value='dairy free')
-                label(for='dairy free') Dairy free
+                input(type='checkbox', id ='dairy', name='Intolerance', value='dairy')
+                label(for='dairy') Dairy
             div
-                input(type='checkbox', id ='grain free', name='Intolerance', value='grain free')
-                label(for='grain free') Grain free
+                input(type='checkbox', id ='egg', name='Intolerance', value='egg')
+                label(for='egg') Egg
+            div
+                input(type='checkbox', id ='peanut', name='Intolerance', value='peanut')
+                label(for='peanut') Peanut
+            div
+                input(type='checkbox', id ='sesame', name='Intolerance', value='sesame')
+                label(for='sesame') Sesame
+            div
+                input(type='checkbox', id ='seafood', name='Intolerance', value='seafood')
+                label(for='seafood') Seafood
+            div
+                input(type='checkbox', id ='shellfish', name='Intolerance', value='shellfish')
+                label(for='shellfish') Shellfish
+            div
+                input(type='checkbox', id ='soy', name='Intolerance', value='soy')
+                label(for='soy') Soy
+            div
+                input(type='checkbox', id ='sulfite', name='Intolerance', value='sulfite')
+                label(for='sulfite') Sulfite
+            div
+                input(type='checkbox', id ='tree nut', name='Intolerance', value='tree nut')
+                label(for='tree nut') Tree Nut
+            div
+                input(type='checkbox', id ='wheat', name='Intolerance', value='wheat')
+                label(for='wheat') Wheat
+
         fieldset
             legend Please specify your diet
             div
@@ -28,29 +60,19 @@ block content
                 input#pescetarian(type='checkbox', name='Diet', value='pescetarian')
                 label(for='pescetarian') Pescetarian
             div
-                input(type='checkbox', id ='high protein', name='Diet', value='high protein')
-                label(for='high protein') High protein
+                input(type='checkbox', id ='lacto vegetarian', name='Diet', value='lacto vegetarian')
+                label(for='lacto vegetarian') Lacto Vegetarian
             div
-                input(type='checkbox', id ='low sodium', name='Diet', value='low sodium')
-                label(for='low sodium') Low sodium
+                input(type='checkbox', id ='ovo vegetarian', name='Diet', value='ovo vegetarian')
+                label(for='ovo vegetarian') Ovo Vegetarian
             div
-                input(type='checkbox', id ='low carb', name='Diet', value='low carb')
-                label(for='low carb') Low carb
+                input(type='checkbox', id ='primal', name='Diet', value='primal')
+                label(for='primal') Primal
             div
                 input#Paleo(type='checkbox', name='Diet', value='Paleo')
                 label(for='Paleo') Paleo
-            div
-                input#Primal(type='checkbox', name='Diet', value='Primal')
-                label(for='Primal') Primal
-            div
-                input#ketogenic(type='checkbox', name='Diet', value='ketogenic')
-                label(for='ketogenic') Ketogenic
-            div
-                input#FODMAP(type='checkbox', name='Diet', value='FODMAP')
-                label(for='FODMAP') FODMAP
-            div
-                input(type='checkbox', id = 'Whole 30', name='Diet', value='Whole 30')
-                label(for='Whole 30') Whole 30
+            
+
 
         fieldset
             legend Please specify your genre preference

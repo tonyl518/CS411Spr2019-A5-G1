@@ -16,10 +16,6 @@ let redirect_uri = 'http://localhost:3000/callback'
 key = config.ingredients.key;
 host = config.ingredients.host;
 
-//Access token & refresh token global -- TO BE DELETED
-var access_token = null;
-var refresh_token = null;
-
 
 var generateRandomString = function(length) {
   var text = '';
@@ -34,18 +30,16 @@ var generateRandomString = function(length) {
 
 
 /* TODO:
-  -Query database 
   -Format buttons for response
   -Put refresh button on search results page and make global variable that is incremented by 5 every time we do a refresh & if new search it starts from 0 again
   -Display widget
   -Make sure recipe still displayed with widget
-  -Separate routing
-  -Whenever we use spotify, check if the tokens have expired. If so, refresh them
-  -Store tokens, expiry time in database with user
 
+
+/*------------------------------ REQUESTS -------------------------------------------*/
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Emma\'s Example Spotify App!' });
+  res.render('index', { title: 'HomeChefInspiration' });
 });
 
 
@@ -75,7 +69,7 @@ router.get('/callback?', async function(req, res, next){
 
 
   if(req.query.error){
-    res.render('index', { title: 'Emma\'s Example Spotify App!' });
+    res.render('index', { title: 'Home Chef Inspiration!' });
   }else{
     var code = req.query.code || null;
 
@@ -85,12 +79,56 @@ router.get('/callback?', async function(req, res, next){
     //Store current user globally
     req.session.currentUser = userInfo.id;
     console.log("CURR USER : ", req.session.currentUser);
+    req.session.currentUserName = userInfo.name;
     
     //Render the landing page
     res.render('landingPage', { title: userInfo.name });
 
   }
 
+
+});
+
+/*------- GET Edit Profile---------*/
+router.get('/editProfile', function(req, res, next){
+
+  res.render('checkbox', {msg: null});
+
+});
+
+/*--------------Get Home Page--------*/
+router.get('/home', function(req, res, next){
+
+  res.render('landingPage', { title: req.session.currentUserName });
+
+});
+
+/*---------- POST Update profile ---------- */
+router.post('/updateProfile', async function(req, res, next){
+  var intolerancesArr = [];
+  var dietsArr = [];
+  var genresArr = [];
+
+  //Check if there are values for all of the profile options
+  if(req.body.Intolerance){
+    intolerancesArr = req.body.Intolerance;
+  }
+
+  if(req.body.Diet){
+    dietsArr = req.body.Diet;
+  }
+
+  if(req.body.Genre_preference){
+    genresArr = req.body.Genre_preference
+  }
+
+  //Build the tokens key value pairs to update
+  var tokens = {intolerances: intolerancesArr, diets: dietsArr, genres: genresArr};
+
+  //Update profile in database
+  const updatedProfile = await updateUser(req.session.currentUser, tokens);
+
+  res.render('checkbox', {msg: 1});
 
 });
 
@@ -163,39 +201,7 @@ router.post('/createPlaylist', async function(req, response, next) {
 });
 
  module.exports = router;
-/*
- async function refreshToken(){
-   // requesting access token from refresh token
-  var refresh_token = req.query.refresh_token;
-  var authOptions = {
-    url: 'https://accounts.spotify.com/api/token',
-    headers: { 'Authorization': 'Basic ' + (new Buffer(config.spotify.cli_id + ':' + config.spotify.cli_secret).toString('base64')) },
-    form: { 
-      grant_type: 'refresh_token',
-      refresh_token: refresh_token
-    },
-    json: true
-  };
 
-  await request.post(authOptions, function(error, response, body) {
-    if (!error && response.statusCode === 200) {
-      access_token = body.access_token;
-      res.send({
-        'access_token': access_token
-      });
-    }
-  });
-  
- };
-/* Check if the token has expired yet -- if so, refresh tokens, if not, we're fine
- async componentDidMount() {
-  const tokenExpirationTime = await getUserData('expirationTime');
-  if (!tokenExpirationTime || new Date().getTime() > tokenExpirationTime) {
-    await refreshToken();
-  } else {
-    this.setState({ accessTokenAvailable: true });
-  }
-}*/
 /*----------------- HANDLER FUNCTIONS, API CALL FUNCTIONS ----------------------*/
 /*-------------------RECIPE SEARCH---------------------------------*/
 async function recipeSearchHandler(ingredients, id, key, host){
@@ -510,6 +516,7 @@ function getUserProfile(access_token){
     });
   });
 }
+
 
 /*---------------------------------DATABASE RELATED -----------------------------------*/
 //Search for user -- based on current user id

@@ -79,6 +79,7 @@ router.get('/callback?', async function(req, res, next){
 
   //Store current user globally
   req.session.currentUser = userInfo.id;
+  console.log("CURR USER : ", req.session.currentUser);
   
   //Render the landing page
   res.render('landingPage', { title: userInfo.name });
@@ -231,9 +232,8 @@ function createNewPlaylist(recipeName, access_token, user_id){
   return new Promise((resolve, reject) => {
 
     request(options, function (error, response, body) {
-      if (error) { return console.log(error); }
+      if (error) { reject(error); };
 
-      //console.log(body);
 
       //New playlist ID
       let newPlaylistID = body.id;
@@ -266,7 +266,7 @@ function searchSongs(genre, access_token, user_id){
   
 
       request(options, function (error, response, body) {
-        if (error) throw new Error(error);
+        if (error) {reject(error);};
           
 
         var searchResults = body.tracks["items"];
@@ -324,7 +324,7 @@ function addSongsToPlaylist(idArray, newPlaylistID, access_token){
               Authorization: 'Bearer ' + access_token, 'Content-Type': 'application/json', Accept: "application/json" },
             json: true };
             request(options, function (error, response, body) {
-              if (error) throw new Error(error);
+              if (error) {reject(error);};
             
               //console.log(body);
 
@@ -341,18 +341,18 @@ async function loginHandler(cli_id, cli_secret, redirect_uri, code){
   //Get user profile information
   const userInfo = await getUserProfile(tokens.access_token);
   //Search for user ID 
-  /*
-  const userFound = await searchForUser(userInfo.id);
+  const userFound = await searchForUser(userInfo.usr_id);
+  console.log("USER FOUND? ", userFound);
   //If new user, store in DB
   if(userFound){
-    const userUpdate = updateUser(userInfo.id, {access_token: tokens.access_token, expirationTime: tokens.expirationTime, refresh_token: tokens.refresh_token});
+    const userUpdate = await updateUser(userInfo.usr_id, {usr_id: userInfo.usr_id, access_token: tokens.access_token, expiry_time_ms: tokens.expirationTime, refresh_token: tokens.refresh_token});
   }else{
   //If not new user, update refresh token, access token, and expiry_time
-    const userCreate = createUser(userInfo.id, {access_token: tokens.access_token, expirationTime: tokens.expirationTime, refresh_token: tokens.refresh_token})
+    const userCreate = await createUser(userInfo.usr_id, {usr_id: userInfo.usr_id, access_token: tokens.access_token, expiry_time_ms: tokens.expirationTime, refresh_token: tokens.refresh_token});
   }
-  */
+  
 
-  return {id: userInfo.id, name: userInfo.name};
+  return {id: userInfo.usr_id, name: userInfo.name};
 
 }
 
@@ -376,9 +376,9 @@ function exchangeForToken(code, redirect_uri, cli_id, cli_secret){
     request.post(authOptions, function(error, response, body) {
       if (error || response.statusCode != 200) { return console.log(error); }
       //Store the access token, refresh token, and time of expiry in the database with user information
-      access_token = body.access_token;
-      refresh_token = body.refresh_token;
-      const expirationTime = new Date().getTime() + body.expiresIn * 1000;
+      var access_token = body.access_token;
+      var refresh_token = body.refresh_token;
+      var expirationTime = new Date().getTime() + (body.expires_in * 1000);
       console.log('Access Token ', access_token)
 
       resolve({access_token: access_token, refresh_token: refresh_token, expirationTime: expirationTime});
@@ -409,14 +409,75 @@ function getUserProfile(access_token){
         name = body.display_name;
       }
 
-      resolve({name: name, id: body.id});
+      resolve({name: name, usr_id: body.id});
     });
   });
 }
 
 /*---------------------------------DATABASE RELATED -----------------------------------*/
 //Search for user -- based on current user id
+function searchForUser(id){
+  return new Promise((resolve, reject) => {
+    let UserModel = require('../models/user_model');
+    UserModel
+    .findOne({
+      usr_id: id  // search query
+    })
+    .then(doc => {
+      if(!doc){
+        console.log("NOT FOUND");
+        resolve(null);
+      }else{
+        console.log("FOUND");
+        resolve(1);
+      }
+      
+    })
+    .catch(err => {
+      console.error(err)
+      reject(err);
+    })
+  });
 
+}
 //Update user -- based on current user id, object of key value pairs to update
+function updateUser(id, tokens){
+  return new Promise((resolve, reject) => {
+    let UserModel = require('../models/user_model');
+    UserModel
+    .updateOne({
+      usr_id: id  // search query
+    },
+    tokens,    //values to update
+    {
+      new: true,                       // return updated doc
+      runValidators: true              // validate before update
+    })
+    .then(doc => {
+      console.log("UPDATED", doc);
+      resolve(1);
+    })
+    .catch(err => {
+      console.error(err)
+      reject(err);
+    })
+  });
+}
 
 //Save new user -- object of key value pairs & id
+function createUser(id, tokens){
+  return new Promise((resolve, reject) => {
+    let UserModel = require('../models/user_model');
+    let usr = new UserModel(tokens);
+    usr.save()
+      .then(doc => {
+        console.log("CREATED: ", doc);
+        resolve(1);
+      })
+      .catch(err => {
+        console.error(err)
+        reject(err);
+      })
+  });
+  
+}

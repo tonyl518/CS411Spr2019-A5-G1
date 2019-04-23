@@ -94,6 +94,14 @@ router.get('/callback?', async function(req, res, next){
 
 });
 
+/* GET Logout*/
+
+router.get('/logout', function (req, res){
+  req.session.destroy(function (err) {
+    res.redirect('/'); //Inside a callback… bulletproof!
+  });
+});
+
 /* POST ingredients list for search */
 router.post('/getRecipes', function(req, response, next) {
   console.log(req.body.ingredients);

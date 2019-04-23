@@ -1,0 +1,182 @@
+extends layout
+
+block content
+    h1= 123
+
+    form(method = 'POST' action = '/free')
+        h1= id
+        fieldset
+            legend Please specify your intolerance
+            div
+                input(type='checkbox', id='gluten free', name='Intolerance', value='gluten free')
+                label(for='gluten free') Gluten free
+            div
+                input(type='checkbox', id ='dairy free', name='Intolerance', value='dairy free')
+                label(for='dairy free') Dairy free
+            div
+                input(type='checkbox', id ='grain free', name='Intolerance', value='grain free')
+                label(for='grain free') Grain free
+        fieldset
+            legend Please specify your diet
+            div
+                input#vegan(type='checkbox', name='Diet', value='vegan')
+                label(for='vegan') Vegan
+            div
+                input#vegetarian(type='checkbox', name='Diet', value='vegetarian')
+                label(for='vegetarian') Vegetarian
+            div
+                input#pescetarian(type='checkbox', name='Diet', value='pescetarian')
+                label(for='pescetarian') Pescetarian
+            div
+                input(type='checkbox', id ='high protein', name='Diet', value='high protein')
+                label(for='high protein') High protein
+            div
+                input(type='checkbox', id ='low sodium', name='Diet', value='low sodium')
+                label(for='low sodium') Low sodium
+            div
+                input(type='checkbox', id ='low carb', name='Diet', value='low carb')
+                label(for='low carb') Low carb
+            div
+                input#Paleo(type='checkbox', name='Diet', value='Paleo')
+                label(for='Paleo') Paleo
+            div
+                input#Primal(type='checkbox', name='Diet', value='Primal')
+                label(for='Primal') Primal
+            div
+                input#ketogenic(type='checkbox', name='Diet', value='ketogenic')
+                label(for='ketogenic') Ketogenic
+            div
+                input#FODMAP(type='checkbox', name='Diet', value='FODMAP')
+                label(for='FODMAP') FODMAP
+            div
+                input(type='checkbox', id = 'Whole 30', name='Diet', value='Whole 30')
+                label(for='Whole 30') Whole 30
+
+        fieldset
+            legend Please specify your genre preference
+            div
+                input(type='checkbox', id='acoustic', name='Genre_preference', value='acoustic')
+                label(for='acoustic') acoustic
+            div
+                input(type='checkbox', id ='afrobeat', name='Genre_preference', value='afrobeat')
+                label(for='afrobeat') afrobeat
+            div
+                input(type='checkbox', id ='alt-rock', name='Genre_preference', value='alt-rock')
+                label(for='alt-rock') alt-rock
+            div
+                input(type='checkbox', id='alternative', name='Genre_preference', value='alternative')
+                label(for='alternative') alternative
+            div
+                input(type='checkbox', id ='ambient', name='Genre_preference', value='ambient')
+                label(for='ambient') ambient
+            div
+                input(type='checkbox', id ='anime', name='Genre_preference', value='anime')
+                label(for='anime') anime
+            div
+                input(type='checkbox', id='black-metal', name='Genre_preference', value='black-metal')
+                label(for='black-metal') black-metal
+            div
+                input(type='checkbox', id ='bluegrass', name='Genre_preference', value='bluegrass')
+                label(for='bluegrass') bluegrass
+            div
+                input(type='checkbox', id ='blues', name='Genre_preference', value='blues')
+                label(for='blues') blues
+            div
+                input(type='checkbox', id ='bossanova', name='Genre_preference', value='bossanova')
+                label(for='bossanova') bossanova
+            div
+                input(type='checkbox', id ='brazil', name='Genre_preference', value='brazil')
+                label(for='brazil') brazil
+            div
+                input(type='checkbox', id='breakbeat', name='Genre_preference', value='breakbeat')
+                label(for='breakbeat') breakbeat
+            div
+                input(type='checkbox', id ='british', name='Genre_preference', value='british')
+                label(for='british') british
+            div
+                input(type='checkbox', id ='cantopop', name='Genre_preference', value='cantopop')
+                label(for='cantopop') cantopop
+            div
+                input(type='checkbox', id ='children', name='Genre_preference', value='children')
+                label(for='children') children
+            div
+                input(type='checkbox', id ='chill', name='Genre_preference', value='chill')
+                label(for='chill') chill
+            div
+                input(type='checkbox', id='classical', name='Genre_preference', value='classical')
+                label(for='classical') classical
+            div
+                input(type='checkbox', id ='club', name='Genre_preference', value='club')
+                label(for='club') club
+            div
+                input(type='checkbox', id ='comedy', name='Genre_preference', value='comedy')
+                label(for='comedy') comedy
+            div
+                input(type='checkbox', id ='country', name='Genre_preference', value='country')
+                label(for='country') country
+            div
+                input(type='checkbox', id ='dance', name='Genre_preference', value='dance')
+                label(for='dance') dance
+            div
+                input(type='checkbox', id='dancehall', name='Genre_preference', value='dancehall')
+                label(for='dancehall') dancehall
+            div
+                input(type='checkbox', id ='disco', name='Genre_preference', value='disco')
+                label(for='disco') disco
+            div
+                input(type='checkbox', id ='disney', name='Genre_preference', value='disney')
+                label(for='disney') disney
+            div
+                input(type='checkbox', id ='dub', name='Genre_preference', value='dub')
+                label(for='dub') dub
+            div
+                input(type='checkbox', id ='edm', name='Genre_preference', value='edm')
+                label(for='edm') edm
+            div
+                input(type='checkbox', id='electronic', name='Genre_preference', value='electronic')
+                label(for='electronic') electronic
+            div
+                input(type='checkbox', id ='emo', name='Genre_preference', value='emo')
+                label(for='emo') emo
+            div
+                input(type='checkbox', id ='folk', name='Genre_preference', value='folk')
+                label(for='folk') folk
+            div
+                input(type='checkbox', id ='forro', name='Genre_preference', value='forro')
+                label(for='forro') forro
+            div
+                input(type='checkbox', id ='french', name='Genre_preference', value='french')
+                label(for='french') french
+            div
+                input(type='checkbox', id ='funk', name='Genre_preference', value='funk')
+                label(for='funk') funk
+            div
+                input(type='checkbox', id ='german', name='Genre_preference', value='german')
+                label(for='german') german
+            div
+                input(type='checkbox', id='groove', name='Genre_preference', value='groove')
+                label(for='groove') groove
+            div
+                input(type='checkbox', id ='pop', name='Genre_preference', value='pop')
+                label(for='pop') pop
+            div
+                input(type='checkbox', id ='rock', name='Genre_preference', value='rock')
+                label(for='rock') rock
+            div
+                input(type='checkbox', id ='sleep', name='Genre_preference', value='sleep')
+                label(for='sleep') sleep
+            div
+                input(type='checkbox', id ='study', name='Genre_preference', value='study')
+                label(for='study') study
+            div
+                input(type='checkbox', id='summer', name='Genre_preference', value='summer')
+                label(for='summer') summer
+            div
+                input(type='checkbox', id ='work-out', name='Genre_preference', value='work-out')
+                label(for='work-out') work-out
+            div
+                input(type='checkbox', id ='world-music', name='Genre_preference', value='world-music')
+                label(for='world-music') world-music
+            div
+                button(type='submit') Submit form
+

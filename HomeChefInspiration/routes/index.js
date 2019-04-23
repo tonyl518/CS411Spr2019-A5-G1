@@ -96,9 +96,11 @@ router.get('/callback?', async function(req, res, next){
       res.render('checkbox', { title: "New User" });
     }
   }
-
-
 });
+
+router.get('/building', function(req,res,next){
+  res.render('checkbox',{title:'Button!'});
+})
 router.post('/building', async function(req, res, next){
   console.log("Preferences: ", req.body);
 

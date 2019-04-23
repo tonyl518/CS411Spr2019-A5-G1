@@ -175,14 +175,23 @@ router.post('/getRecipes', async function(req, response, next) {
 
   });
 
-//Create playlist 
+//POST Create playlist 
 router.post('/createPlaylist', async function(req, response, next) {
  //Refresh token
  //Make the playlist
  var chosenRecipe = JSON.parse(req.body.playlistBtn);
  console.log("BODY OF RECIPE:", chosenRecipe);
  console.log("CURR USER", req.session.currentUser);
- var genre = 'jazz';
+
+ //Default genre in case they have not yet chosen a genre
+ var genre = 'pop';
+ //Check if the user input genres
+ const userDoc = await searchForUser(req.session.currentUser);
+ if(userDoc.genres.length){
+    //If so, choose a random one
+    genre = await chooseRandomGenre(userDoc.genres);
+ }
+ //Continue to create playlist
  var cookTime = chosenRecipe.readyInMinutes;
  var recipeName = chosenRecipe.title;
  var success = await createPlaylistHandler(genre, cookTime, recipeName, req.session.currentUser);
@@ -435,6 +444,11 @@ function addSongsToPlaylist(idArray, newPlaylistID, access_token){
             });
           });
 
+}
+
+function chooseRandomGenre(genres){
+  var index = Math.floor(Math.random() * (genres.length))
+  return genres[index];
 }
 
 /*-------------------------------- LOGIN ---------------------------------------------*/

@@ -1,20 +1,20 @@
 extends layout
 
 block content
-    h1= 123
+    h1= 'Please indicate your preferences here'
 
     form(method = 'POST' action = '/building')
         h1= id
         fieldset
             legend Please specify your intolerance
             div
-                input(type='checkbox', id='gluten free', name='Intolerance', value='gluten free')
+                input(type='checkbox', id='gluten free', name='Intolerance', value='gluten')
                 label(for='gluten free') Gluten free
             div
-                input(type='checkbox', id ='dairy free', name='Intolerance', value='dairy free')
+                input(type='checkbox', id ='dairy free', name='Intolerance', value='dairy')
                 label(for='dairy free') Dairy free
             div
-                input(type='checkbox', id ='grain free', name='Intolerance', value='grain free')
+                input(type='checkbox', id ='grain free', name='Intolerance', value='grain')
                 label(for='grain free') Grain free
         fieldset
             legend Please specify your diet

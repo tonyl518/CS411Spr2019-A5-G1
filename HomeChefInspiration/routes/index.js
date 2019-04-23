@@ -76,7 +76,8 @@ router.get('/callback?', async function(req, res, next){
 
   if(req.query.error){
     res.render('index', { title: 'Emma\'s Example Spotify App!' });
-  }else{
+  }
+  else{
     var code = req.query.code || null;
 
     //Handle exchanging code for token, storing new user in database or updating old user's tokens
@@ -87,11 +88,28 @@ router.get('/callback?', async function(req, res, next){
     console.log("CURR USER : ", req.session.currentUser);
     
     //Render the landing page
-    res.render('landingPage', { title: userInfo.name });
-
+    
+    if (userInfo.diets || userInfo.intolerances || userInfo.genres){
+      res.render('landingPage', { title: "Registered User" })
+    }
+    else{
+      res.render('checkbox', { title: "New User" });
+    }
   }
 
 
+});
+router.post('/building', async function(req, res, next){
+  console.log("Preferences: ", req.body);
+  const Intolerances = req.body.Intolerance;
+  const Diets = req.body.Diet;
+  const Genre = req.body.Genre_preference;
+  const userInfo = await searchForUser(req.session.currentUser);
+  
+  const newUser = {usr_id: userInfo.usr_id, diets: Diets, intolerances: Intolerances, genres: Genre, access_token: userInfo.access_token, expiry_time_ms: userInfo.expirationTime, refresh_token: userInfo.refresh_token};
+  console.log("abouttoupdate: ", newUser);
+  const resu = await updateUser(req.session.currentUser, newUser);
+  res.render('landingPage',{ title: userInfo.name });
 });
 
 /* GET Logout*/
@@ -144,7 +162,11 @@ router.post('/createPlaylist', async function(req, response, next) {
  var chosenRecipe = JSON.parse(req.body.playlistBtn);
  console.log("BODY OF RECIPE:", chosenRecipe);
  console.log("CURR USER", req.session.currentUser);
- var genre = 'jazz';
+ var userInfo = await searchForUser(req.session.currentUser);
+ var genres = userInfo.genres;
+ console.log("userGenres: ",genres)
+ var index = Math.floor(Math.random() * genres.length);
+ var genre = genres[index];
  var cookTime = chosenRecipe.readyInMinutes;
  var recipeName = chosenRecipe.title;
  var success = await createPlaylistHandler(genre, cookTime, recipeName, req.session.currentUser);
@@ -212,13 +234,13 @@ function checkForDietsAndIntolerances(doc){
     var intolerances;
     var diets;
 
-    if(doc.intolerances.length){
+    if(doc.intolerances){
       intolerances = doc.intolerances
     }else{
       intolerances = null;
     }
 
-    if(doc.diets.length){
+    if(doc.diets){
       diets = doc.diets
     }else{
       diets = null;

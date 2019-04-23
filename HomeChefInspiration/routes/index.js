@@ -429,7 +429,7 @@ function searchForUser(id){
         resolve(null);
       }else{
         console.log("FOUND");
-        resolve(1);
+        resolve(doc);
       }
       
     })

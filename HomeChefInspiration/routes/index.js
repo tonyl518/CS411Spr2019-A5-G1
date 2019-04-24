@@ -28,14 +28,6 @@ var generateRandomString = function(length) {
 };
 
 
-
-/* TODO:
-  -Format buttons for response
-  -Put refresh button on search results page and make global variable that is incremented by 5 every time we do a refresh & if new search it starts from 0 again
-  -Display widget
-  -Make sure recipe still displayed with widget
-
-
 /*------------------------------ REQUESTS -------------------------------------------*/
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -99,7 +91,7 @@ router.get('/editProfile', function(req, res, next){
 /*--------------Get Home Page--------*/
 router.get('/home', function(req, res, next){
 
-  res.render('landingPage', { title: req.session.currentUserName });
+  res.render('landingPage', { name: req.session.currentUserName, title: 'HomeChefInspiration' });
 
 });
 
@@ -128,7 +120,7 @@ router.post('/updateProfile', async function(req, res, next){
   //Update profile in database
   const updatedProfile = await updateUser(req.session.currentUser, tokens);
 
-  res.render('checkbox', {msg: 1});
+  res.render('checkbox', {msg: 1, title: 'HomeChefInspiration'});
 
 });
 
@@ -145,7 +137,7 @@ router.post('/getRecipes', async function(req, response, next) {
 
   const recipeResults = await recipeSearchHandler(req.body.ingredients, req.session.currentUser, key, host);
 
-  response.render('recipeResults', {body: recipeResults, title: 'CS411Lab5Group1'});
+  response.render('recipeResults', {body: recipeResults, title: 'HomeChefInspiration'});
 });
 
 
@@ -169,7 +161,7 @@ router.post('/getRecipes', async function(req, response, next) {
       if (err) { return console.log(err); }
       console.log(body);
 
-      response.render('recipeInformation', {recipe: body, msg: null, generated: null, title: 'CS411Lab5Group1'});
+      response.render('recipeInformation', {recipe: body, msg: null, generated: null, title: 'HomeChefInspiration'});
 
     });
 
@@ -206,12 +198,12 @@ router.post('/createPlaylist', async function(req, response, next) {
    msg = "Error. Please contact support or come back later";
  }
  //Render recipe page with success message
- response.render('recipeInformation', {recipe: chosenRecipe, msg: msg, generated: generated,title: 'CS411Lab5Group1'});
+ response.render('recipeInformation', {recipe: chosenRecipe, msg: msg, generated: generated,title: 'HomeChefInspiration'});
 });
 
  module.exports = router;
 
-/*----------------- HANDLER FUNCTIONS, API CALL FUNCTIONS ----------------------*/
+/*---------------------------------------- HANDLER FUNCTIONS, API CALL FUNCTIONS, DATABASE FUNCTIONS ---------------------------------------------------*/
 /*-------------------RECIPE SEARCH---------------------------------*/
 async function recipeSearchHandler(ingredients, id, key, host){
   const userDoc = await searchForUser(id);
@@ -247,7 +239,7 @@ function checkForDietsAndIntolerances(doc){
 function searchRecipes(ingredients, restrictions, key, host){
   //Add diets and intolerances to query string and then search
   return new Promise((resolve, reject) => {
-    var qs = {includeIngredients: ingredients, limitLicense: false, offset: '0', number: '5'};
+    var qs = {includeIngredients: ingredients, limitLicense: false, offset: '0', number: '10'};
 
     var diets = restrictions.diets;
     var intolerances = restrictions.intolerances;
@@ -259,7 +251,7 @@ function searchRecipes(ingredients, restrictions, key, host){
 
     //If diets is not null
     if(diets){
-
+      //Add all diets to the query string
       for(i = 0; i < (diets.length) - 1; i++){
         dietsString += diets[i];
         dietsString += ',';
@@ -277,7 +269,7 @@ function searchRecipes(ingredients, restrictions, key, host){
 
     //If intolerances aren't null
     if(intolerances){
-
+      //Add all intolerances to the query string
       for(i = 0; i < (intolerances.length) - 1; i++){
         intolerancesString += intolerances[i];
         intolerancesString += ',';
@@ -316,7 +308,7 @@ async function createPlaylistHandler(genre, cookTime, recipeName, user_id){
 
   const playlistID = await createNewPlaylist(recipeName, access_token, user_id);
   console.log("PROMISE 1 RESOLVED");
-  const searchResults = await searchSongs(genre, access_token, user_id);
+  const searchResults = await searchSongs(genre, access_token);
   console.log("PROMISE 2 RESOLVED");
   //console.log("SEARCH RESULTS: ", searchResults);
   const idArray = await narrowDownSongs(searchResults, cookTime);
@@ -357,9 +349,9 @@ function createNewPlaylist(recipeName, access_token, user_id){
 
 }
 
-function searchSongs(genre, access_token, user_id){
-  //Searches songs based on the genre the user prefers
-  //Do a search by selected genre for 250 songs, shuffle. 
+function searchSongs(genre, access_token){
+  //Searches songs based on a genre the user prefers
+  //Do a search by selected genre for 350 songs. 
   var i;
   var j;
   var counter = 0;
@@ -551,7 +543,7 @@ function getUserProfile(access_token){
 }
 
 
-/*---------------------------------DATABASE RELATED -----------------------------------*/
+/*---------------------------------DATABASE FUNCTIONS -----------------------------------*/
 //Search for user -- based on current user id
 function searchForUser(id){
   return new Promise((resolve, reject) => {

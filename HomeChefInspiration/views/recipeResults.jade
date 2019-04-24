@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  h1= title
+  form(method = 'GET' action = '/logout')
+    button.btn.btn-primary(type='submit') Logout
+  p
+    b Recipe Results:
+  div
+    table(style='width:100%', border='1')
+        tbody
+            tr 
+                th Title
+            each recipe in body.results
+                tr 
+                    td 
+                        form(method = 'POST' action = '/viewRecipe')
+                            button(type = "submit", value = recipe.id, name = "recButton", id = "recButton") #{recipe.title} 

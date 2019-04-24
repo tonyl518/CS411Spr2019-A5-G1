@@ -1,0 +1,27 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+#recButton {
+    background:none!important;
+     color:inherit;
+     border:none; 
+     padding:0!important;
+     font: inherit;
+     /*border is optional*/
+     /*border-bottom:1px solid #444; */
+     cursor: pointer;
+}
+
+#recButton:hover { 
+  color: rgb(243, 119, 0);
+}
+
+p#playlistSuccessMsg{
+  color: rgb(243, 119, 0);
+}

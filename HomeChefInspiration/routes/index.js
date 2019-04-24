@@ -128,7 +128,7 @@ router.post('/updateProfile', async function(req, res, next){
 
 router.get('/logout', function (req, res){
   req.session.destroy(function (err) {
-    res.redirect('/'); //Inside a callback… bulletproof!
+    res.render('logoutMsg'); //Inside a callback… bulletproof!
   });
 });
 

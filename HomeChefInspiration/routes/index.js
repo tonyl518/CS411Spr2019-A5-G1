@@ -406,21 +406,30 @@ function narrowDownSongs(songList, cookTime){
   //Take search results and narrow down to playlist of length of cook time
   return new Promise((resolve, reject) => {
     var totalTime = 0;
-    var trackIDs = new Array();
+    
     var i = 0;
-    while((totalTime <= cookTime) && (i < songList.length)){
-      console.log("RESULT ID:", songList[i]["uri"]);
-      //Append song to list of track IDs
-      trackIDs.push(songList[i]["uri"]);
-      //Add time of song to total time & convert to minutes
-      var trackLength = songList[i].duration_ms / 60000;
-      totalTime += trackLength;
-      //Next item on list
-      i++;
-
+    var j = 0;
+    var trackListArray = new Array();
+    console.log(songList.length);
+    
+      while((totalTime <= cookTime) && (i < songList.length)){
+        j = 0;
+        var trackIDs = [];
+          while (j < 50 && (i < songList.length) && (totalTime <= cookTime)){
+            console.log("RESULT ID:", songList[i]["uri"]);
+            //Append song to list of track IDs
+            trackIDs.push(songList[i]["uri"]);
+            //Add time of song to total time & convert to minutes
+            var trackLength = songList[i].duration_ms / 60000;
+            totalTime += trackLength;
+            //Next item on list
+            i++;
+            j++;
+          }
+          trackListArray.push(trackIDs);
     }
-
-    resolve(trackIDs);
+      console.log("ARRAY OF TRACK LISTS TO PUSH: ", trackListArray)
+    resolve(trackListArray);
   });
 
 }
@@ -428,21 +437,31 @@ function narrowDownSongs(songList, cookTime){
 function addSongsToPlaylist(idArray, newPlaylistID, access_token){
   //Adds songs to the new playlist created
   return new Promise((resolve, reject) => {
-    options = { method: 'POST',
-            url: 'https://api.spotify.com/v1/playlists/' + newPlaylistID + '/tracks',
-            body: {'uris': idArray},
-            headers: 
-            {
-              Authorization: 'Bearer ' + access_token, 'Content-Type': 'application/json', Accept: "application/json" },
-            json: true };
-            request(options, function (error, response, body) {
-              if (error) {reject(error);};
-            
-              //console.log(body);
+    var i = 0;
+    var counter = 0;
+    for(i = 0; i < idArray.length; i++){
+      options = { method: 'POST',
+      url: 'https://api.spotify.com/v1/playlists/' + newPlaylistID + '/tracks',
+      body: {'uris': idArray[i]},
+      headers: 
+      {
+        Authorization: 'Bearer ' + access_token, 'Content-Type': 'application/json', Accept: "application/json" },
+      json: true };
+      request(options, function (error, response, body) {
+        if (error) {reject(error);};
+      
+        //console.log(body);
 
-              resolve(1);
-            });
-          });
+        if(counter === (idArray.length-1)){
+          resolve(1);
+        }
+        
+        counter++;
+      });
+
+    }
+
+  });
 
 }
 

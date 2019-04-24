@@ -15,189 +15,189 @@ block content
         fieldset
             legend Please specify your intolerance
             div
-                input(type='checkbox', id='gluten', name='Intolerance', value='gluten')
+                input(type='checkbox', id='gluten', name='Intolerance', value='gluten', checked = prof.intolerance.includes('gluten') ? "checked" : undefined )
                 label(for='gluten') Gluten
             div
-                input(type='checkbox', id ='dairy', name='Intolerance', value='dairy')
+                input(type='checkbox', id ='dairy', name='Intolerance', value='dairy', checked = prof.intolerance.includes('dairy') ? "checked" : undefined  )
                 label(for='dairy') Dairy
             div
-                input(type='checkbox', id ='egg', name='Intolerance', value='egg')
+                input(type='checkbox', id ='egg', name='Intolerance', value='egg', checked = prof.intolerance.includes('egg') ? "checked" : undefined )
                 label(for='egg') Egg
             div
-                input(type='checkbox', id ='peanut', name='Intolerance', value='peanut')
+                input(type='checkbox', id ='peanut', name='Intolerance', value='peanut', checked = prof.intolerance.includes('peanut') ? "checked" : undefined )
                 label(for='peanut') Peanut
             div
-                input(type='checkbox', id ='sesame', name='Intolerance', value='sesame')
+                input(type='checkbox', id ='sesame', name='Intolerance', value='sesame', checked = prof.intolerance.includes('sesame') ? "checked" : undefined )
                 label(for='sesame') Sesame
             div
-                input(type='checkbox', id ='seafood', name='Intolerance', value='seafood')
+                input(type='checkbox', id ='seafood', name='Intolerance', value='seafood', checked = prof.intolerance.includes('seafood') ? "checked" : undefined )
                 label(for='seafood') Seafood
             div
-                input(type='checkbox', id ='shellfish', name='Intolerance', value='shellfish')
+                input(type='checkbox', id ='shellfish', name='Intolerance', value='shellfish', checked = prof.intolerance.includes('shellfish') ? "checked" : undefined )
                 label(for='shellfish') Shellfish
             div
-                input(type='checkbox', id ='soy', name='Intolerance', value='soy')
+                input(type='checkbox', id ='soy', name='Intolerance', value='soy', checked = prof.intolerance.includes('soy') ? "checked" : undefined )
                 label(for='soy') Soy
             div
-                input(type='checkbox', id ='sulfite', name='Intolerance', value='sulfite')
+                input(type='checkbox', id ='sulfite', name='Intolerance', value='sulfite', checked = prof.intolerance.includes('sulfite') ? "checked" : undefined )
                 label(for='sulfite') Sulfite
             div
-                input(type='checkbox', id ='tree nut', name='Intolerance', value='tree nut')
+                input(type='checkbox', id ='tree nut', name='Intolerance', value='tree nut', checked = prof.intolerance.includes('tree nut') ? "checked" : undefined )
                 label(for='tree nut') Tree Nut
             div
-                input(type='checkbox', id ='wheat', name='Intolerance', value='wheat')
+                input(type='checkbox', id ='wheat', name='Intolerance', value='wheat', checked = prof.intolerance.includes('wheat') ? "checked" : undefined )
                 label(for='wheat') Wheat
 
         fieldset
             legend Please specify your diet
             div
-                input#vegan(type='checkbox', name='Diet', value='vegan')
+                input#vegan(type='checkbox', name='Diet', value='vegan', checked = prof.diet.includes('vegan') ? "checked" : undefined)
                 label(for='vegan') Vegan
             div
-                input#vegetarian(type='checkbox', name='Diet', value='vegetarian')
+                input#vegetarian(type='checkbox', name='Diet', value='vegetarian', checked = prof.diet.includes('vegetarian') ? "checked" : undefined )
                 label(for='vegetarian') Vegetarian
             div
-                input#pescetarian(type='checkbox', name='Diet', value='pescetarian')
+                input#pescetarian(type='checkbox', name='Diet', value='pescetarian', checked = prof.diet.includes('pescetarian') ? "checked" : undefined )
                 label(for='pescetarian') Pescetarian
             div
-                input(type='checkbox', id ='lacto vegetarian', name='Diet', value='lacto vegetarian')
+                input(type='checkbox', id ='lacto vegetarian', name='Diet', value='lacto vegetarian', checked = prof.diet.includes('lacto vegetarian') ? "checked" : undefined )
                 label(for='lacto vegetarian') Lacto Vegetarian
             div
-                input(type='checkbox', id ='ovo vegetarian', name='Diet', value='ovo vegetarian')
+                input(type='checkbox', id ='ovo vegetarian', name='Diet', value='ovo vegetarian', checked = prof.diet.includes('ovo vegetarian') ? "checked" : undefined )
                 label(for='ovo vegetarian') Ovo Vegetarian
             div
-                input(type='checkbox', id ='primal', name='Diet', value='primal')
+                input(type='checkbox', id ='primal', name='Diet', value='primal', checked = prof.diet.includes('primal') ? "checked" : undefined )
                 label(for='primal') Primal
             div
-                input#Paleo(type='checkbox', name='Diet', value='Paleo')
-                label(for='Paleo') Paleo
+                input(type='checkbox', name='Diet', value='paleo', id = 'paleo', checked = prof.diet.includes('paleo') ? "checked" : undefined )
+                label(for='paleo') Paleo
             
 
 
         fieldset
             legend Please specify your genre preference
             div
-                input(type='checkbox', id='acoustic', name='Genre_preference', value='acoustic')
+                input(type='checkbox', id='acoustic', name='Genre_preference', value='acoustic', checked = prof.genre.includes('acoustic') ? "checked" : undefined )
                 label(for='acoustic') acoustic
             div
-                input(type='checkbox', id ='afrobeat', name='Genre_preference', value='afrobeat')
+                input(type='checkbox', id ='afrobeat', name='Genre_preference', value='afrobeat', checked = prof.genre.includes('afrobeat') ? "checked" : undefined )
                 label(for='afrobeat') afrobeat
             div
-                input(type='checkbox', id ='alt-rock', name='Genre_preference', value='alt-rock')
+                input(type='checkbox', id ='alt-rock', name='Genre_preference', value='alt-rock', checked = prof.genre.includes('alt-rock') ? "checked" : undefined )
                 label(for='alt-rock') alt-rock
             div
-                input(type='checkbox', id='alternative', name='Genre_preference', value='alternative')
+                input(type='checkbox', id='alternative', name='Genre_preference', value='alternative', checked = prof.genre.includes('alternative') ? "checked" : undefined )
                 label(for='alternative') alternative
             div
-                input(type='checkbox', id ='ambient', name='Genre_preference', value='ambient')
+                input(type='checkbox', id ='ambient', name='Genre_preference', value='ambient', checked = prof.genre.includes('ambient') ? "checked" : undefined )
                 label(for='ambient') ambient
             div
-                input(type='checkbox', id ='anime', name='Genre_preference', value='anime')
+                input(type='checkbox', id ='anime', name='Genre_preference', value='anime', checked = prof.genre.includes('anime') ? "checked" : undefined )
                 label(for='anime') anime
             div
-                input(type='checkbox', id='black-metal', name='Genre_preference', value='black-metal')
+                input(type='checkbox', id='black-metal', name='Genre_preference', value='black-metal', checked = prof.genre.includes('black-metal') ? "checked" : undefined )
                 label(for='black-metal') black-metal
             div
-                input(type='checkbox', id ='bluegrass', name='Genre_preference', value='bluegrass')
+                input(type='checkbox', id ='bluegrass', name='Genre_preference', value='bluegrass', checked = prof.genre.includes('bluegrass') ? "checked" : undefined )
                 label(for='bluegrass') bluegrass
             div
-                input(type='checkbox', id ='blues', name='Genre_preference', value='blues')
+                input(type='checkbox', id ='blues', name='Genre_preference', value='blues', checked = prof.genre.includes('blues') ? "checked" : undefined )
                 label(for='blues') blues
             div
-                input(type='checkbox', id ='bossanova', name='Genre_preference', value='bossanova')
+                input(type='checkbox', id ='bossanova', name='Genre_preference', value='bossanova', checked = prof.genre.includes('bossanova') ? "checked" : undefined )
                 label(for='bossanova') bossanova
             div
-                input(type='checkbox', id ='brazil', name='Genre_preference', value='brazil')
+                input(type='checkbox', id ='brazil', name='Genre_preference', value='brazil', checked = prof.genre.includes('brazil') ? "checked" : undefined )
                 label(for='brazil') brazil
             div
-                input(type='checkbox', id='breakbeat', name='Genre_preference', value='breakbeat')
+                input(type='checkbox', id='breakbeat', name='Genre_preference', value='breakbeat', checked = prof.genre.includes('breakbeat') ? "checked" : undefined )
                 label(for='breakbeat') breakbeat
             div
-                input(type='checkbox', id ='british', name='Genre_preference', value='british')
+                input(type='checkbox', id ='british', name='Genre_preference', value='british', checked = prof.genre.includes('british') ? "checked" : undefined )
                 label(for='british') british
             div
-                input(type='checkbox', id ='cantopop', name='Genre_preference', value='cantopop')
+                input(type='checkbox', id ='cantopop', name='Genre_preference', value='cantopop', checked = prof.genre.includes('cantopop') ? "checked" : undefined )
                 label(for='cantopop') cantopop
             div
-                input(type='checkbox', id ='children', name='Genre_preference', value='children')
+                input(type='checkbox', id ='children', name='Genre_preference', value='children', checked = prof.genre.includes('children') ? "checked" : undefined )
                 label(for='children') children
             div
-                input(type='checkbox', id ='chill', name='Genre_preference', value='chill')
+                input(type='checkbox', id ='chill', name='Genre_preference', value='chill', checked = prof.genre.includes('chill') ? "checked" : undefined )
                 label(for='chill') chill
             div
-                input(type='checkbox', id='classical', name='Genre_preference', value='classical')
+                input(type='checkbox', id='classical', name='Genre_preference', value='classical', checked = prof.genre.includes('classical') ? "checked" : undefined )
                 label(for='classical') classical
             div
-                input(type='checkbox', id ='club', name='Genre_preference', value='club')
+                input(type='checkbox', id ='club', name='Genre_preference', value='club', checked = prof.genre.includes('club') ? "checked" : undefined )
                 label(for='club') club
             div
-                input(type='checkbox', id ='comedy', name='Genre_preference', value='comedy')
+                input(type='checkbox', id ='comedy', name='Genre_preference', value='comedy', checked = prof.genre.includes('comedy') ? "checked" : undefined )
                 label(for='comedy') comedy
             div
-                input(type='checkbox', id ='country', name='Genre_preference', value='country')
+                input(type='checkbox', id ='country', name='Genre_preference', value='country', checked = prof.genre.includes('country') ? "checked" : undefined )
                 label(for='country') country
             div
-                input(type='checkbox', id ='dance', name='Genre_preference', value='dance')
+                input(type='checkbox', id ='dance', name='Genre_preference', value='dance', checked = prof.genre.includes('dance') ? "checked" : undefined )
                 label(for='dance') dance
             div
-                input(type='checkbox', id='dancehall', name='Genre_preference', value='dancehall')
+                input(type='checkbox', id='dancehall', name='Genre_preference', value='dancehall', checked = prof.genre.includes('dancehall') ? "checked" : undefined )
                 label(for='dancehall') dancehall
             div
-                input(type='checkbox', id ='disco', name='Genre_preference', value='disco')
+                input(type='checkbox', id ='disco', name='Genre_preference', value='disco', checked = prof.genre.includes('disco') ? "checked" : undefined )
                 label(for='disco') disco
             div
-                input(type='checkbox', id ='disney', name='Genre_preference', value='disney')
+                input(type='checkbox', id ='disney', name='Genre_preference', value='disney', checked = prof.genre.includes('disney') ? "checked" : undefined )
                 label(for='disney') disney
             div
-                input(type='checkbox', id ='dub', name='Genre_preference', value='dub')
+                input(type='checkbox', id ='dub', name='Genre_preference', value='dub', checked = prof.genre.includes('dub') ? "checked" : undefined )
                 label(for='dub') dub
             div
-                input(type='checkbox', id ='edm', name='Genre_preference', value='edm')
+                input(type='checkbox', id ='edm', name='Genre_preference', value='edm', checked = prof.genre.includes('edm') ? "checked" : undefined )
                 label(for='edm') edm
             div
-                input(type='checkbox', id='electronic', name='Genre_preference', value='electronic')
+                input(type='checkbox', id='electronic', name='Genre_preference', value='electronic', checked = prof.genre.includes('electronic') ? "checked" : undefined )
                 label(for='electronic') electronic
             div
-                input(type='checkbox', id ='emo', name='Genre_preference', value='emo')
+                input(type='checkbox', id ='emo', name='Genre_preference', value='emo', checked = prof.genre.includes('emo') ? "checked" : undefined )
                 label(for='emo') emo
             div
-                input(type='checkbox', id ='folk', name='Genre_preference', value='folk')
+                input(type='checkbox', id ='folk', name='Genre_preference', value='folk', checked = prof.genre.includes('folk') ? "checked" : undefined )
                 label(for='folk') folk
             div
-                input(type='checkbox', id ='forro', name='Genre_preference', value='forro')
+                input(type='checkbox', id ='forro', name='Genre_preference', value='forro', checked = prof.genre.includes('forro') ? "checked" : undefined )
                 label(for='forro') forro
             div
-                input(type='checkbox', id ='french', name='Genre_preference', value='french')
+                input(type='checkbox', id ='french', name='Genre_preference', value='french', checked = prof.genre.includes('french') ? "checked" : undefined )
                 label(for='french') french
             div
-                input(type='checkbox', id ='funk', name='Genre_preference', value='funk')
+                input(type='checkbox', id ='funk', name='Genre_preference', value='funk', checked = prof.genre.includes('funk') ? "checked" : undefined )
                 label(for='funk') funk
             div
-                input(type='checkbox', id ='german', name='Genre_preference', value='german')
+                input(type='checkbox', id ='german', name='Genre_preference', value='german', checked = prof.genre.includes('german') ? "checked" : undefined )
                 label(for='german') german
             div
-                input(type='checkbox', id='groove', name='Genre_preference', value='groove')
+                input(type='checkbox', id='groove', name='Genre_preference', value='groove', checked = prof.genre.includes('groove') ? "checked" : undefined )
                 label(for='groove') groove
             div
-                input(type='checkbox', id ='pop', name='Genre_preference', value='pop')
+                input(type='checkbox', id ='pop', name='Genre_preference', value='pop', checked = prof.genre.includes('pop') ? "checked" : undefined )
                 label(for='pop') pop
             div
-                input(type='checkbox', id ='rock', name='Genre_preference', value='rock')
+                input(type='checkbox', id ='rock', name='Genre_preference', value='rock', checked = prof.genre.includes('rock') ? "checked" : undefined )
                 label(for='rock') rock
             div
-                input(type='checkbox', id ='sleep', name='Genre_preference', value='sleep')
+                input(type='checkbox', id ='sleep', name='Genre_preference', value='sleep', checked = prof.genre.includes('sleep') ? "checked" : undefined )
                 label(for='sleep') sleep
             div
-                input(type='checkbox', id ='study', name='Genre_preference', value='study')
+                input(type='checkbox', id ='study', name='Genre_preference', value='study', checked = prof.genre.includes('study') ? "checked" : undefined )
                 label(for='study') study
             div
-                input(type='checkbox', id='summer', name='Genre_preference', value='summer')
+                input(type='checkbox', id='summer', name='Genre_preference', value='summer', checked = prof.genre.includes('summer') ? "checked" : undefined )
                 label(for='summer') summer
             div
-                input(type='checkbox', id ='work-out', name='Genre_preference', value='work-out')
+                input(type='checkbox', id ='work-out', name='Genre_preference', value='work-out', checked = prof.genre.includes('work-out') ? "checked" : undefined )
                 label(for='work-out') work-out
             div
-                input(type='checkbox', id ='world-music', name='Genre_preference', value='world-music')
+                input(type='checkbox', id ='world-music', name='Genre_preference', value='world-music', checked = prof.genre.includes('world-music') ? "checked" : undefined )
                 label(for='world-music') world-music
             div
                 button(type='submit') Submit form

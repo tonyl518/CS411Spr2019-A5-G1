@@ -82,9 +82,13 @@ router.get('/callback?', async function(req, res, next){
 });
 
 /*------- GET Edit Profile---------*/
-router.get('/editProfile', function(req, res, next){
+router.get('/editProfile', async function(req, res, next){
 
-  res.render('checkbox', {msg: null});
+  let profile = await searchForUser(req.session.currentUser);
+
+  let profObj = {intolerance: profile.intolerances, diet: profile.diets, genre: profile.genres};
+
+  res.render('checkbox', {msg: null, prof: profObj});
 
 });
 

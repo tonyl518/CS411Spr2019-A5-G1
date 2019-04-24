@@ -190,15 +190,15 @@ router.post('/createPlaylist', async function(req, response, next) {
 
  var msg = null;
  var generated = null;
- if(success){
+ if(success.success){
   generated = 1;
-  msg = "Success! The playlist is now on your account";
+  msg = "Success! The playlist is now on your account. View it ";
  }else{
    generated = 555;
    msg = "Error. Please contact support or come back later";
  }
  //Render recipe page with success message
- response.render('recipeInformation', {recipe: chosenRecipe, msg: msg, generated: generated,title: 'HomeChefInspiration'});
+ response.render('recipeInformation', {recipe: chosenRecipe, msg: msg, generated: generated,title: 'HomeChefInspiration', url: success.url});
 });
 
  module.exports = router;
@@ -306,15 +306,15 @@ async function createPlaylistHandler(genre, cookTime, recipeName, user_id){
   console.log("USER DOC ", userDoc.access_token);
   const access_token = userDoc.access_token;
 
-  const playlistID = await createNewPlaylist(recipeName, access_token, user_id);
+  const playlistInfo = await createNewPlaylist(recipeName, access_token, user_id);
   console.log("PROMISE 1 RESOLVED");
   const searchResults = await searchSongs(genre, access_token);
   console.log("PROMISE 2 RESOLVED");
   //console.log("SEARCH RESULTS: ", searchResults);
   const idArray = await narrowDownSongs(searchResults, cookTime);
   console.log("NEXT PROMISE RESOLVED");
-  const addSongsResults = await addSongsToPlaylist(idArray, playlistID, access_token);
-  return addSongsResults;
+  const addSongsResults = await addSongsToPlaylist(idArray, playlistInfo.id, access_token);
+  return {success: addSongsResults, url: playlistInfo.url};
 }
 
 function createNewPlaylist(recipeName, access_token, user_id){
@@ -341,8 +341,10 @@ function createNewPlaylist(recipeName, access_token, user_id){
 
       //New playlist ID
       let newPlaylistID = body.id;
+      let newPlaylistURL = body.external_urls.spotify;
 
-      resolve(newPlaylistID);
+      let playlistInfo = {id: newPlaylistID, url: newPlaylistURL};
+      resolve(playlistInfo);
 
     });
   })

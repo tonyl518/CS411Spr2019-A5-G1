@@ -22,6 +22,7 @@ block content
 
   if generated
     p(id = "playlistSuccessMsg") #{msg}
+      a(href = url) here
   else
     - var json = JSON.stringify(recipe);
     form(method = 'POST' action = '/createPlaylist')

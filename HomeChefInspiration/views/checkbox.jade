@@ -1,11 +1,11 @@
 extends layout
 
 block content
-    form(method = 'GET' action = '/home')
+    a(method = 'GET' action = '/home')
       button.btn.btn-primary(type='submit') Home
-    form(method = 'GET' action = '/logout')
+    a(method = 'GET' action = '/logout')
       button.btn.btn-primary(type='submit') Logout
-    form(method = 'GET' action = '/editProfile')
+    a(method = 'GET' action = '/editProfile')
       button.btn.btn-primary(type='submit') Edit Profile
     h1 Edit Your Profile
     if msg

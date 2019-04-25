@@ -1,12 +1,18 @@
 extends layout
 
 block content
-  a(method = 'GET' action = '/home')
-    button.btn.btn-primary(type='submit') Home
-  a(method = 'GET' action = '/logout')
-    button.btn.btn-primary(type='submit') Logout
-  a(method = 'GET' action = '/editProfile')
-    button.btn.btn-primary(type='submit') Edit Profile
+  table(border='0')
+    tbody
+      tr
+        td
+          form(method = 'GET' action = '/home')
+            button.btn.btn-primary(type='submit') Home
+        td
+          form(method = 'GET' action = '/logout')
+            button.btn.btn-primary(type='submit') Logout
+        td
+          form(method = 'GET' action = '/editProfile')
+            button.btn.btn-primary(type='submit') Edit Profile
   p
     b Recipe Results:
   div

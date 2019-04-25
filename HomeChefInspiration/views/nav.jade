@@ -1,0 +1,14 @@
+img.side-logo(src='logo1.png')
+    
+table#nav(border='0')
+    tbody
+      tr
+        td
+          form(method = 'GET' action = '/home')
+            button.btn.btn-primary(type='submit') Home
+        td
+          form(method = 'GET' action = '/editProfile')
+            button.btn.btn-primary(type='submit') Edit Profile
+        td
+          form(method = 'GET' action = '/logout')
+            button.btn.btn-primary(type='submit') Logout

@@ -197,7 +197,7 @@ router.post('/createPlaylist', async function(req, response, next) {
  var generated = null;
  if(success.success){
   generated = 1;
-  msg = "Success! The playlist is now on your account. View it ";
+  msg = "Success! The playlist is now on your account.";
  }else{
    generated = 555;
    msg = "Error. Please contact support or come back later";

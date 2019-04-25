@@ -1,27 +1,20 @@
 extends layout
 
 block content
-  table(border='0')
-    tbody
-      tr
-        td
-          form(method = 'GET' action = '/home')
-            button.btn.btn-primary(type='submit') Home
-        td
-          form(method = 'GET' action = '/logout')
-            button.btn.btn-primary(type='submit') Logout
-        td
-          form(method = 'GET' action = '/editProfile')
-            button.btn.btn-primary(type='submit') Edit Profile
+  include nav
   p
     b Recipe Results:
   div
-    table(style='width:100%', border='1')
-        tbody
+    table.recipe-table(style='width:100%')
+        tbody.recipe-body
             tr 
-                th Title
+                th.recipe-header Image
+                th.recipe-header Recipe
             each recipe in body.results
                 tr 
-                    td 
+                    td.recipe-col 
+                      img.recipe-img(src=recipe.image)
+                    td.recipe-col 
                         form(method = 'POST' action = '/viewRecipe')
                             button(type = "submit", value = recipe.id, name = "recButton", id = "recButton") #{recipe.title} 
+

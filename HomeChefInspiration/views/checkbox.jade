@@ -1,18 +1,7 @@
 extends layout
 
 block content
-    table(border='0')
-        tbody
-            tr
-                td
-                    form(method = 'GET' action = '/home')
-                        button.btn.btn-primary(type='submit') Home
-                td
-                    form(method = 'GET' action = '/logout')
-                        button.btn.btn-primary(type='submit') Logout
-                td
-                    form(method = 'GET' action = '/editProfile')
-                        button.btn.btn-primary(type='submit') Edit Profile
+    include nav
     h1 Edit Your Profile
     if msg
         p Success! Profile Updated.

@@ -1,10 +1,13 @@
+@import url(https://fonts.googleapis.com/css?family=Sigmar+One);
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
-
-a {
-  color: #00B7FF;
+  //background: #E6553F;
+  //background: #C54157;
+  //background: #D0456D;
+  //background: #D95B5B;
+  background: #E8707B;
+  color: #ffffff;
 }
 
 #recButton {
@@ -18,63 +21,72 @@ a {
      cursor: pointer;
 }
 
+nav {
+  display: inline-block;
+}
+
+#nav{
+  position: static;
+  padding-left: 65vw;
+  margin-block-end: 1in;
+}
+
 #recButton:hover { 
   color: rgb(243, 119, 0);
 }
 
 p#playlistSuccessMsg{
-  color: rgb(243, 119, 0);
+  color: #fff;
+  font-size: 20px;
+
 }
 
 input {
-  width: 400px;
-  //height: 70px;
-  border: 4px solid #cfddd3;
+  width: 1400px;
+  height: 30px;
+  border: 4px solid #FF745E;
   color: #fff;
   cursor: pointer;
   font-size: 1.4rem;
   letter-spacing: 3px;
   line-height: 1.2;
   padding: 18px 24px;
+  //margin-block-start: 20%;
 }
 
-h1 {
-  font: 56px "Arial Black";
+#ingredients {
+  font-size: 12px;
+  letter-spacing: 2px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+.title {
+  font-family:'Sigmar One',cursive;
   text-align: center;
-  background-color: #67ddab;
   color: #fff;
-  border: 1px solid #67ddab;
-  border-radius: 10px;
+  padding: 0px;
+  margin: 0px;
 }
 
-tbody {
-  text-align: center;
-  font-size: 20px;
+#t1{
+  font-size: 84px;
 }
 
-
-table {
-  //padding: 10px;
-  background: #d4eadd;
-  boarder: 1px;
-  border-radius: 15px;
-  height: 260px;
+#t2 {
+  font-size: 54px;
+  line-height: 10px;
 }
 
-td {
-  background: aliceblue;
-  //padding: 10px;
-  font-family: sans-serif;
-  //border: 1px solid;
-  //border-radius: 5px;
+.login{
+  margin: 80px;
 }
 
 button {
   height: 80px;
 
-  background-color: #67ddab;
-  border: 4px solid #67ddab;
-  color: #fff;
+  background-color: #ffffff;
+  border: 4px solid #FF745E;
+  color: #9C2C1A;
   cursor: pointer;
   font-size: 14px;
   font-size: 1.4rem;
@@ -86,7 +98,66 @@ button {
   width: auto;
 }
 
-img {
+button:hover {
+background-color: rgb(158, 103, 102);
+//background-color: #E8A0AB;
+color: #fff;
+}
+
+.side-logo {
+  position: fixed;
+  padding-left: 10%;
+  top: 1vh;
+}
+
+#wel {
+  font-size: 56px;
+  margin-block-start: 20%
+}
+
+.recipe-img {
   height: 120px;
   width: 120px;
+}
+
+.recipe-table {
+    padding: 1em;
+    background: #F5C1C7;
+    border: 1px;
+    border-radius: 15px;
+}
+
+.recipe-body {
+    text-align: center;
+    font-size: 20px;
+    color: #E8707B;
+}
+
+.recipe-col {
+    background: #FFE2DF;
+}
+
+.recipe-header {
+  color: #ffffff;
+  text-align: center;
+  padding-bottom: 2mm;
+}
+
+.recipe-info {
+  background-color: #FFE2DF;
+  text-align: center;
+  font-size: 20px;
+  color: #E8707B;
+  margin-left: 7in;
+  margin-right: 7in;
+  padding-bottom: 5em;
+  padding-top: 3em;
+  margin-block-start: 2em;
+  border: 1px;
+  border-radius: 15px;
+}
+
+.logout {
+  font-size: 54px;
+  margin-block-start: 40vh;
 }

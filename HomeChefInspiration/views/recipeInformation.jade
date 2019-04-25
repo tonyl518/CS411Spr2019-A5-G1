@@ -1,35 +1,26 @@
 extends layout
 
 block content
-  table(border='0')
-    tbody
-      tr
-        td
-          form(method = 'GET' action = '/home')
-            button.btn.btn-primary(type='submit') Home
-        td
-          form(method = 'GET' action = '/logout')
-            button.btn.btn-primary(type='submit') Logout
-        td
-          form(method = 'GET' action = '/editProfile')
-            button.btn.btn-primary(type='submit') Edit Profile
+  include nav
+  div.recipe-info
+    p
+      b #{recipe.title}
 
-  p
-    b #{recipe.title}
-
-  p Prep Time: #{recipe.readyInMinutes} minutes
+    p Prep Time: #{recipe.readyInMinutes} minutes
 
 
-  each ingredient in recipe.extendedIngredients
-    p - #{ingredient.originalString}
-  p
-    b Instructions 
-  p #{recipe.instructions}
-
-  if generated
-    p(id = "playlistSuccessMsg") #{msg}
-      a(href = url) here
-  else
-    - var json = JSON.stringify(recipe);
-    form(method = 'POST' action = '/createPlaylist')
-      button.btn.btn-primary(type='submit', value = json, name = 'playlistBtn') Generate Playlist
+    each ingredient in recipe.extendedIngredients
+      p - #{ingredient.originalString}
+    p
+      b Instructions 
+    p #{recipe.instructions}
+  
+  center
+    if generated
+      p(id = "playlistSuccessMsg") #{msg}
+        form(action = url)
+          button.playlist(type='submit') Click here to play
+    else
+      - var json = JSON.stringify(recipe);
+      form(method = 'POST' action = '/createPlaylist')
+        button.playlist(type='submit', value = json, name = 'playlistBtn') Generate Playlist

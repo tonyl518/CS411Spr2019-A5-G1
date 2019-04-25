@@ -8,5 +8,7 @@ block content
       
       form(method = 'POST' action = '/getRecipes')
         label(for='ingredients')
-        input#ingredients.form-control(type='text', name='ingredients', placeholder= 'Enter ingredients separated by commas')
-        button.btn.btn-primary(type='submit') Submit
+        input#ingredients.form-control(type='text', name='ingredients', placeholder= 'To start searching, please enter ingredients separated by commas')
+        button.btn.btn-primary(type='submit') Search
+      form(action = 'https://yelp.com')
+          button.yelp(type='submit') I don't want to cook

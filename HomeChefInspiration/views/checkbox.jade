@@ -2,11 +2,11 @@ extends layout
 
 block content
     include nav
-    h1 Edit Your Profile
+    h1.edit Edit Your Profile
     if msg
         p Success! Profile Updated.
+    h1= id
     form(method = 'POST' action = '/updateProfile')
-        h1= id
         fieldset
             legend Please specify your intolerance
             div
@@ -70,7 +70,7 @@ block content
 
 
         fieldset
-            legend Please specify your genre preference
+            legend Please specify your music genre preference
             div
                 input(type='checkbox', id='acoustic', name='Genre_preference', value='acoustic', checked = prof.genre.includes('acoustic') ? "checked" : undefined )
                 label(for='acoustic') acoustic
@@ -194,6 +194,7 @@ block content
             div
                 input(type='checkbox', id ='world-music', name='Genre_preference', value='world-music', checked = prof.genre.includes('world-music') ? "checked" : undefined )
                 label(for='world-music') world-music
-            div
-                button(type='submit') Submit form
+        div
+            center
+                button.checkbox(type='submit') Submit form
 

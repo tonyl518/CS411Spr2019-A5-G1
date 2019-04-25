@@ -2,10 +2,11 @@ extends layout
 
 block content
   include nav
-  center  
-    p#wel Welcome #{name}
-    
-    form(method = 'POST' action = '/getRecipes')
-      label(for='ingredients')
-      input#ingredients.form-control(type='text', name='ingredients', placeholder= 'Enter ingredients separated by commas')
-      button.btn.btn-primary(type='submit') Submit
+  #search  
+    center  
+      p#wel Welcome #{name}
+      
+      form(method = 'POST' action = '/getRecipes')
+        label(for='ingredients')
+        input#ingredients.form-control(type='text', name='ingredients', placeholder= 'Enter ingredients separated by commas')
+        button.btn.btn-primary(type='submit') Submit

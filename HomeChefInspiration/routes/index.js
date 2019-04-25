@@ -268,7 +268,7 @@ function searchRecipes(ingredients, restrictions, key, host){
       console.log("DIETS STRING: ", dietsString);
 
       //Add to query string
-      qs.diets = dietsString;
+      qs.diet = dietsString;
 
     }
 

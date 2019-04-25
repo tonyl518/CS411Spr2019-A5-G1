@@ -104,6 +104,7 @@ router.post('/updateProfile', async function(req, res, next){
   var intolerancesArr = [];
   var dietsArr = [];
   var genresArr = [];
+  console.log("Postupdate: ", req.body)
 
   //Check if there are values for all of the profile options
   if(req.body.Intolerance){
@@ -123,8 +124,8 @@ router.post('/updateProfile', async function(req, res, next){
 
   //Update profile in database
   const updatedProfile = await updateUser(req.session.currentUser, tokens);
-
-  res.render('checkbox', {msg: 1, title: 'HomeChefInspiration'});
+  const profObj = {intolerance:tokens.intolerances , diet: tokens.diets, genre: tokens.genres}
+  res.render('checkbox', {msg: 1, title: 'HomeChefInspiration', prof:profObj});
 
 });
 

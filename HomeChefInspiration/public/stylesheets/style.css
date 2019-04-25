@@ -27,7 +27,7 @@ nav {
 
 #nav{
   position: static;
-  padding-left: 65vw;
+  padding-left: 60vw;
   margin-block-end: 1in;
 }
 
@@ -105,9 +105,9 @@ color: #fff;
 }
 
 .side-logo {
-  position: fixed;
-  padding-left: 10%;
-  top: 1vh;
+  position: relative;
+  margin-left: 5vw;
+  top: 15vh;
 }
 
 #wel {

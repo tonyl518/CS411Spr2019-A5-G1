@@ -2,10 +2,10 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  //background: #E6553F;
+  /*background: #E6553F;
   //background: #C54157;
   //background: #D0456D;
-  //background: #D95B5B;
+  //background: #D95B5B; */
   background: #E8707B;
   color: #ffffff;
 }
@@ -39,11 +39,9 @@ nav {
 
 #nav{
   width:auto;
-  //margin:50px 50px 50px 50px;
   float:right;
   top:-80px;
   padding-top: 3em;
-
 }
 
 #nav1{
@@ -119,7 +117,6 @@ button:hover {
 
 .side-logo {
   width:auto;
-  //margin:50px 50px 50px 50px;
   float:left;
   top:-40px;
 }
@@ -139,6 +136,7 @@ button:hover {
   background: #F5C1C7;
   border: 1px;
   border-radius: 15px;
+  box-shadow: 5px 10px 8px 10px #ce7070;
 }
 
 .results {
@@ -152,8 +150,12 @@ button:hover {
   color: #E8707B;
 }
 
-.recipe-col {
+.recipe-row{
   background: #FFE2DF;
+}
+
+.recipe-row:nth-child(2n+0) {
+  background: #fbd2d7;
 }
 
 .recipe-header {
@@ -174,6 +176,7 @@ button:hover {
   border: 1px;
   border-radius: 15px;
   clear: both;
+  box-shadow: 5px 10px 8px 10px #ce7070;
 }
 
 .logout {
@@ -190,14 +193,15 @@ button:hover {
 }
 
 fieldset {
-    background-color: #F5C1C7;
-    border: 1px solid #D0456D;
-    border-top: 20px solid #D0456D;
-    border-bottom: 10px solid #D0456D;
-    padding:50px;
-    font-size: 20px;
-    align-items: center;      
-    border-radius: 3em;
+  background-color: #F5C1C7;
+  border: 1px solid #D0456D;
+  border-top: 20px solid #D0456D;
+  border-bottom: 10px solid #D0456D;
+  padding:50px;
+  font-size: 20px;
+  align-items: center;      
+  border-radius: 3em;
+  box-shadow: -1px 3px 10px 1px #882f2f;
 }
 
 fieldset legend {
@@ -248,7 +252,6 @@ fieldset legend {
   border: 2px solid #FFFFFF;
 }
 
-
 .checkbox-label input:checked~.checkbox-custom {
   background-color: #FFFFFF;
   border-radius: 5px;
@@ -258,7 +261,6 @@ fieldset legend {
   opacity: 1;
   border: 2px solid #FFFFFF;
 }
-
 
 .checkbox-label .checkbox-custom::after {
   position: absolute;
@@ -281,7 +283,6 @@ fieldset legend {
   -o-transition: all 0.3s ease-out;
 }
 
-
 .checkbox-label input:checked~.checkbox-custom::after {
   -webkit-transform: rotate(45deg) scale(1);
   -ms-transform: rotate(45deg) scale(1);
@@ -296,8 +297,6 @@ fieldset legend {
   background-color: transparent;
   border-radius: 0;
 }
-
-
 
 /* For Ripple Effect */
 .checkbox-label .checkbox-custom::before {
@@ -333,7 +332,6 @@ fieldset legend {
 }
 .input-title {
   padding-left: 2em;
-  
 }
 
 .checkbox-container {

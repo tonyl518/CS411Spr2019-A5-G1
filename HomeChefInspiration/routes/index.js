@@ -31,7 +31,7 @@ var generateRandomString = function(length) {
 /*------------------------------ REQUESTS -------------------------------------------*/
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'HomeChefInspiration' });
+  res.render('index', { title: 'Home Chef Inspiration' });
 });
 
 
@@ -61,7 +61,7 @@ router.get('/callback?', async function(req, res, next){
 
 
   if(req.query.error){
-    res.render('index', { title: 'Home Chef Inspiration!' });
+    res.render('index', { title: 'Home Chef Inspiration' });
   }else{
     var code = req.query.code || null;
 
@@ -95,7 +95,7 @@ router.get('/editProfile', async function(req, res, next){
 /*--------------Get Home Page--------*/
 router.get('/home', function(req, res, next){
 
-  res.render('landingPage', { name: req.session.currentUserName, title: 'HomeChefInspiration' });
+  res.render('landingPage', { name: req.session.currentUserName, title: 'Home Chef Inspiration' });
 
 });
 
@@ -125,7 +125,7 @@ router.post('/updateProfile', async function(req, res, next){
   //Update profile in database
   const updatedProfile = await updateUser(req.session.currentUser, tokens);
   const profObj = {intolerance:tokens.intolerances , diet: tokens.diets, genre: tokens.genres}
-  res.render('checkbox', {msg: 1, title: 'HomeChefInspiration', prof:profObj});
+  res.render('checkbox', {msg: 1, title: 'Home Chef Inspiration', prof:profObj});
 
 });
 
@@ -166,7 +166,7 @@ router.post('/getRecipes', async function(req, response, next) {
       if (err) { return console.log(err); }
       console.log(body);
 
-      response.render('recipeInformation', {recipe: body, msg: null, generated: null, title: 'HomeChefInspiration'});
+      response.render('recipeInformation', {recipe: body, msg: null, generated: null, title: 'Home Chef Inspiration'});
 
     });
 
@@ -203,7 +203,7 @@ router.post('/createPlaylist', async function(req, response, next) {
    msg = "Error. Please contact support or come back later";
  }
  //Render recipe page with success message
- response.render('recipeInformation', {recipe: chosenRecipe, msg: msg, generated: generated,title: 'HomeChefInspiration', url: success.url});
+ response.render('recipeInformation', {recipe: chosenRecipe, msg: msg, generated: generated,title: 'Home Chef Inspiration', url: success.url});
 });
 
  module.exports = router;

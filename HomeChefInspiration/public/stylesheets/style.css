@@ -49,7 +49,7 @@ p#playlistSuccessMsg{
 }
 
 #ingredients {
-  width: 1400px;
+  width: 50vw;
   height: 30px;
   border: 4px solid #FF745E;
   cursor: pointer;

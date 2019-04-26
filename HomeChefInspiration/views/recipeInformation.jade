@@ -14,13 +14,14 @@ block content
     p
       b Instructions 
     p #{recipe.instructions}
-  
-  center
-    if generated
-      p(id = "playlistSuccessMsg") #{msg}
-        form(action = url)
-          button.playlist(type='submit') Click here to play
-    else
-      - var json = JSON.stringify(recipe);
-      form(method = 'POST' action = '/createPlaylist')
-        button.playlist(type='submit', value = json, name = 'playlistBtn') Generate Playlist
+
+    h1.playlist-space
+    center
+      if generated
+        p(id = "playlistSuccessMsg") #{msg}
+          form(action = url)
+            button.playlist(type='submit') Click here to play
+      else
+        - var json = JSON.stringify(recipe);
+        form(method = 'POST' action = '/createPlaylist')
+          button.playlist(type='submit', value = json, name = 'playlistBtn') Generate Playlist

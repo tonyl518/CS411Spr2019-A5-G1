@@ -2,10 +2,10 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  //background: #E6553F;
+  /*background: #E6553F;
   //background: #C54157;
   //background: #D0456D;
-  //background: #D95B5B;
+  //background: #D95B5B; */
   background: #E8707B;
   color: #ffffff;
 }
@@ -25,11 +25,23 @@ nav {
   display: inline-block;
 }
 
+.top-bar {
+  grid-auto-rows: 1em;
+  grid-template-columns: 65% 30%;
+  margin-block-end: 2in;
+  padding-top: 3em;
+}
+
+#search { 
+  display: grid;
+  padding-left: 4em;
+}
+
 #nav{
   width:auto;
-  margin:50px 50px 50px 50px;
   float:right;
   top:-80px;
+  padding-top: 3em;
 }
 
 #nav1{
@@ -43,13 +55,13 @@ nav {
 }
 
 p#playlistSuccessMsg{
-  color: #fff;
+  color:#525251;
   font-size: 20px;
 
 }
 
 #ingredients {
-  width: 1400px;
+  width: 50vw;
   height: 30px;
   border: 4px solid #FF745E;
   cursor: pointer;
@@ -57,12 +69,7 @@ p#playlistSuccessMsg{
   letter-spacing: 3px;
   line-height: 1.2;
   padding: 18px 24px;
-}
-
-#ingredients1 {
-  font-size: 12px;
-  letter-spacing: 2px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  border-radius: 3em;
 }
 
 .title {
@@ -90,6 +97,7 @@ button {
   height: 80px;
   background-color: #ffffff;
   border: 4px solid #FF745E;
+  border-radius: 3em;
   color: #9C2C1A;
   cursor: pointer;
   font-size: 14px;
@@ -108,10 +116,13 @@ button:hover {
 }
 
 .side-logo {
-  width:auto;
-  margin:50px 50px 50px 50px;
+  width:200px;
   float:left;
   top:-40px;
+}
+
+.main-logo {
+  width: 768px;
 }
 
 #wel {
@@ -129,6 +140,7 @@ button:hover {
   background: #F5C1C7;
   border: 1px;
   border-radius: 15px;
+  box-shadow: 5px 10px 8px 10px #ce7070;
 }
 
 .results {
@@ -142,8 +154,12 @@ button:hover {
   color: #E8707B;
 }
 
-.recipe-col {
+.recipe-row{
   background: #FFE2DF;
+}
+
+.recipe-row:nth-child(2n+0) {
+  background: #fbd2d7;
 }
 
 .recipe-header {
@@ -153,18 +169,18 @@ button:hover {
 }
 
 .recipe-info {
-  background-color: #FFE2DF;
+  background-color: #ff8691;
   text-align: center;
   font-size: 20px;
-  color: #E8707B;
-  margin-left: 3in;
-  margin-right: 3in;
+  margin-left: 3vw;
+  margin-right: 3vw;
   padding-bottom: 5em;
   padding-top: 3em;
   margin-block-start: 2em;
   border: 1px;
   border-radius: 15px;
   clear: both;
+  box-shadow: 5px 10px 8px 10px #ce7070;
 }
 
 .logout {
@@ -172,18 +188,24 @@ button:hover {
   margin-block-start: 2in;  
 }
 
+.updated {
+  font-size: 42px;
+}
+
 .edit{
   clear: both;
 }
 
 fieldset {
-    background-color: #F5C1C7;
-    border: 1px solid #D0456D;
-    border-top: 20px solid #D0456D;
-    border-bottom: 10px solid #D0456D;
-    padding:50px;
-    font-size: 20px;
-    align-items: center;      
+  background-color: #F5C1C7;
+  border: 1px solid #D0456D;
+  border-top: 20px solid #D0456D;
+  border-bottom: 10px solid #D0456D;
+  padding:50px;
+  font-size: 20px;
+  align-items: center;      
+  border-radius: 3em;
+  box-shadow: -1px 3px 10px 1px #882f2f;
 }
 
 fieldset legend {
@@ -198,4 +220,128 @@ fieldset legend {
   position: relative;
   bottom: 0;
   left: 0;
+}
+
+/* Styling Checkbox Starts */
+.checkbox-label {
+  display: block;
+  position: relative;
+  margin: 0px;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 24px;
+  height: 24px;
+  clear: both;
+}
+
+.checkbox-label input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkbox-label .checkbox-custom {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 24px;
+  width: 24px;
+  background-color: transparent;
+  border-radius: 5px;
+  transition: all 0.3s ease-out;
+  -webkit-transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -ms-transition: all 0.3s ease-out;
+  -o-transition: all 0.3s ease-out;
+  border: 2px solid #FFFFFF;
+}
+
+.checkbox-label input:checked~.checkbox-custom {
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  -webkit-transform: rotate(0deg) scale(1);
+  -ms-transform: rotate(0deg) scale(1);
+  transform: rotate(0deg) scale(1);
+  opacity: 1;
+  border: 2px solid #FFFFFF;
+}
+
+.checkbox-label .checkbox-custom::after {
+  position: absolute;
+  content: "";
+  left: 12px;
+  top: 12px;
+  height: 0px;
+  width: 0px;
+  border-radius: 5px;
+  border: solid #009BFF;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(0deg) scale(0);
+  -ms-transform: rotate(0deg) scale(0);
+  transform: rotate(0deg) scale(0);
+  opacity: 1;
+  transition: all 0.3s ease-out;
+  -webkit-transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -ms-transition: all 0.3s ease-out;
+  -o-transition: all 0.3s ease-out;
+}
+
+.checkbox-label input:checked~.checkbox-custom::after {
+  -webkit-transform: rotate(45deg) scale(1);
+  -ms-transform: rotate(45deg) scale(1);
+  transform: rotate(45deg) scale(1);
+  opacity: 1;
+  left: 8px;
+  top: 3px;
+  width: 6px;
+  height: 12px;
+  border: solid #009BFF;
+  border-width: 0 2px 2px 0;
+  background-color: transparent;
+  border-radius: 0;
+}
+
+/* For Ripple Effect */
+.checkbox-label .checkbox-custom::before {
+  position: absolute;
+  content: "";
+  left: 10px;
+  top: 10px;
+  width: 0px;
+  height: 0px;
+  border-radius: 5px;
+  border: 2px solid #FFFFFF;
+  -webkit-transform: scale(0);
+  -ms-transform: scale(0);
+  transform: scale(0);
+}
+
+.checkbox-label input:checked~.checkbox-custom::before {
+  left: -3px;
+  top: -3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  -webkit-transform: scale(3);
+  -ms-transform: scale(3);
+  transform: scale(3);
+  opacity: 0;
+  z-index: 999;
+  transition: all 0.3s ease-out;
+  -webkit-transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -ms-transition: all 0.3s ease-out;
+  -o-transition: all 0.3s ease-out;
+}
+.input-title {
+  padding-left: 2em;
+}
+
+.checkbox-container {
+  padding-bottom: 10px;
+}
+
+.playlist-space {
+  padding-bottom: 1em;
 }

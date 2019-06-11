@@ -1,10 +1,14 @@
 extends layout
 
 block content
-  p Welcome #{title}
-  form(method = 'GET' action = '/logout')
-    button.btn.btn-primary(type='submit') Logout
-  form(method = 'POST' action = '/getRecipes')
-    label(for='ingredients') Enter ingredients separated by commas: 
-    input#ingredients.form-control(type='text', name='ingredients')
-    button.btn.btn-primary(type='submit') Submit
+  include nav
+  #search  
+    center  
+      p#wel Welcome #{name}
+      
+      form(method = 'POST' action = '/getRecipes')
+        label(for='ingredients')
+        input#ingredients.form-control(type='text', name='ingredients', placeholder= 'To start searching, please enter ingredients separated by commas')
+        button.btn.btn-primary(type='submit') Search
+      form(action = 'https://yelp.com')
+          button.yelp(type='submit') I don't want to cook

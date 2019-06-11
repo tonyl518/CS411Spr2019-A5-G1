@@ -16,10 +16,6 @@ let redirect_uri = 'http://localhost:3000/callback'
 key = config.ingredients.key;
 host = config.ingredients.host;
 
-//Access token & refresh token global -- TO BE DELETED
-var access_token = null;
-var refresh_token = null;
-
 
 var generateRandomString = function(length) {
   var text = '';
@@ -32,20 +28,10 @@ var generateRandomString = function(length) {
 };
 
 
-
-/* TODO:
-  -Query database 
-  -Format buttons for response
-  -Put refresh button on search results page and make global variable that is incremented by 5 every time we do a refresh & if new search it starts from 0 again
-  -Display widget
-  -Make sure recipe still displayed with widget
-  -Separate routing
-  -Whenever we use spotify, check if the tokens have expired. If so, refresh them
-  -Store tokens, expiry time in database with user
-
+/*------------------------------ REQUESTS -------------------------------------------*/
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Emma\'s Example Spotify App!' });
+  res.render('index', { title: 'Home Chef Inspiration' });
 });
 
 
@@ -75,7 +61,7 @@ router.get('/callback?', async function(req, res, next){
 
 
   if(req.query.error){
-    res.render('index', { title: 'Emma\'s Example Spotify App!' });
+    res.render('index', { title: 'Home Chef Inspiration' });
   }else{
     var code = req.query.code || null;
 
@@ -85,12 +71,61 @@ router.get('/callback?', async function(req, res, next){
     //Store current user globally
     req.session.currentUser = userInfo.id;
     console.log("CURR USER : ", req.session.currentUser);
+    req.session.currentUserName = userInfo.name;
     
-    //Render the landing page
-    res.render('landingPage', { title: userInfo.name });
+    //Redirect to the landing page
+    res.redirect('/home');
 
   }
 
+
+});
+
+/*------- GET Edit Profile---------*/
+router.get('/editProfile', async function(req, res, next){
+
+  let profile = await searchForUser(req.session.currentUser);
+
+  let profObj = {intolerance: profile.intolerances, diet: profile.diets, genre: profile.genres};
+
+  res.render('checkbox', {msg: null, prof: profObj});
+
+});
+
+/*--------------Get Home Page--------*/
+router.get('/home', function(req, res, next){
+
+  res.render('landingPage', { name: req.session.currentUserName, title: 'Home Chef Inspiration' });
+
+});
+
+/*---------- POST Update profile ---------- */
+router.post('/updateProfile', async function(req, res, next){
+  var intolerancesArr = [];
+  var dietsArr = [];
+  var genresArr = [];
+  console.log("Postupdate: ", req.body)
+
+  //Check if there are values for all of the profile options
+  if(req.body.Intolerance){
+    intolerancesArr = req.body.Intolerance;
+  }
+
+  if(req.body.Diet){
+    dietsArr = req.body.Diet;
+  }
+
+  if(req.body.Genre_preference){
+    genresArr = req.body.Genre_preference
+  }
+
+  //Build the tokens key value pairs to update
+  var tokens = {intolerances: intolerancesArr, diets: dietsArr, genres: genresArr};
+
+  //Update profile in database
+  const updatedProfile = await updateUser(req.session.currentUser, tokens);
+  const profObj = {intolerance:tokens.intolerances , diet: tokens.diets, genre: tokens.genres}
+  res.render('checkbox', {msg: 1, title: 'Home Chef Inspiration', prof:profObj});
 
 });
 
@@ -98,35 +133,16 @@ router.get('/callback?', async function(req, res, next){
 
 router.get('/logout', function (req, res){
   req.session.destroy(function (err) {
-    res.redirect('/'); //Inside a callback… bulletproof!
+    res.render('logoutMsg'); //Inside a callback… bulletproof!
   });
 });
 
 /* POST ingredients list for search */
-router.post('/getRecipes', function(req, response, next) {
-  console.log(req.body.ingredients);
+router.post('/getRecipes', async function(req, response, next) {
 
-  qs = {includeIngredients: req.body.ingredients, limitLicense: false, offset: '0', number: '5'};
+  const recipeResults = await recipeSearchHandler(req.body.ingredients, req.session.currentUser, key, host);
 
-  //Query database for diets and intolerances
-
-  //Convert to strings separated by commas
-
-  //If not empty diets, add to query string
-
-  //If not empty intolerances, add to query string
-
-  //Get the recipes from the API
-  request.get({headers: {"X-RapidAPI-Key": key, "X-RapidAPI-Host": host },
-  url:'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/searchComplex',
-  qs: qs, json: true}, (err, res, body) => {
-
-    if (err) { return console.log(err); }
-    console.log(body);
-
-    //Render the results
-    response.render('recipeResults', {body: body, title: 'CS411Lab5Group1'});
-  });
+  response.render('recipeResults', {body: recipeResults, title: 'HomeChefInspiration'});
 });
 
 
@@ -150,82 +166,160 @@ router.post('/getRecipes', function(req, response, next) {
       if (err) { return console.log(err); }
       console.log(body);
 
-      response.render('recipeInformation', {recipe: body, msg: null, generated: null, title: 'CS411Lab5Group1'});
+      response.render('recipeInformation', {recipe: body, msg: null, generated: null, title: 'Home Chef Inspiration'});
 
     });
 
   });
 
-//Create playlist 
+//POST Create playlist 
 router.post('/createPlaylist', async function(req, response, next) {
  //Refresh token
  //Make the playlist
  var chosenRecipe = JSON.parse(req.body.playlistBtn);
  console.log("BODY OF RECIPE:", chosenRecipe);
- var genre = 'jazz';
+ console.log("CURR USER", req.session.currentUser);
+
+ //Default genre in case they have not yet chosen a genre
+ var genre = 'pop';
+ //Check if the user input genres
+ const userDoc = await searchForUser(req.session.currentUser);
+ if(userDoc.genres.length){
+    //If so, choose a random one
+    genre = await chooseRandomGenre(userDoc.genres);
+ }
+ //Continue to create playlist
  var cookTime = chosenRecipe.readyInMinutes;
  var recipeName = chosenRecipe.title;
- var success = await createPlaylistHandler(genre, cookTime, recipeName, access_token, req.session.currentUser);
+ var success = await createPlaylistHandler(genre, cookTime, recipeName, req.session.currentUser);
 
  var msg = null;
  var generated = null;
- if(success){
+ if(success.success){
   generated = 1;
-  msg = "Success! The playlist is now on your account";
+  msg = "Success! The playlist is now on your account.";
  }else{
    generated = 555;
    msg = "Error. Please contact support or come back later";
  }
  //Render recipe page with success message
- response.render('recipeInformation', {recipe: chosenRecipe, msg: msg, generated: generated,title: 'CS411Lab5Group1'});
+ response.render('recipeInformation', {recipe: chosenRecipe, msg: msg, generated: generated,title: 'Home Chef Inspiration', url: success.url});
 });
 
  module.exports = router;
-/*
- async function refreshToken(){
-   // requesting access token from refresh token
-  var refresh_token = req.query.refresh_token;
-  var authOptions = {
-    url: 'https://accounts.spotify.com/api/token',
-    headers: { 'Authorization': 'Basic ' + (new Buffer(config.spotify.cli_id + ':' + config.spotify.cli_secret).toString('base64')) },
-    form: { 
-      grant_type: 'refresh_token',
-      refresh_token: refresh_token
-    },
-    json: true
-  };
 
-  await request.post(authOptions, function(error, response, body) {
-    if (!error && response.statusCode === 200) {
-      access_token = body.access_token;
-      res.send({
-        'access_token': access_token
-      });
+/*---------------------------------------- HANDLER FUNCTIONS, API CALL FUNCTIONS, DATABASE FUNCTIONS ---------------------------------------------------*/
+/*-------------------RECIPE SEARCH---------------------------------*/
+async function recipeSearchHandler(ingredients, id, key, host){
+  const userDoc = await searchForUser(id);
+  const restrictions = await checkForDietsAndIntolerances(userDoc);
+  const recipeList = await searchRecipes(ingredients, restrictions, key, host);
+
+  return recipeList;
+
+}
+
+function checkForDietsAndIntolerances(doc){
+  return new Promise((resolve, reject) => {
+    var intolerances;
+    var diets;
+
+    if(doc.intolerances.length){
+      intolerances = doc.intolerances
+    }else{
+      intolerances = null;
     }
+
+    if(doc.diets.length){
+      diets = doc.diets
+    }else{
+      diets = null;
+    }
+
+    resolve({diets: diets, intolerances: intolerances});
   });
-  
- };
-/* Check if the token has expired yet -- if so, refresh tokens, if not, we're fine
- async componentDidMount() {
-  const tokenExpirationTime = await getUserData('expirationTime');
-  if (!tokenExpirationTime || new Date().getTime() > tokenExpirationTime) {
-    await refreshToken();
-  } else {
-    this.setState({ accessTokenAvailable: true });
-  }
-}*/
-/*----------------- HANDLER FUNCTIONS, API CALL FUNCTIONS ----------------------*/
+
+}
+
+function searchRecipes(ingredients, restrictions, key, host){
+  //Add diets and intolerances to query string and then search
+  return new Promise((resolve, reject) => {
+    var qs = {includeIngredients: ingredients, limitLicense: false, offset: '0', number: '10'};
+
+    var diets = restrictions.diets;
+    var intolerances = restrictions.intolerances;
+
+    //Convert to strings separated by commas
+    var i;
+    var dietsString = '';
+    var intolerancesString = ''
+
+    //If diets is not null
+    if(diets){
+      //Add all diets to the query string
+      for(i = 0; i < (diets.length) - 1; i++){
+        dietsString += diets[i];
+        dietsString += ',';
+      }
+
+      //Add last one
+      dietsString += diets[(diets.length)-1];
+
+      console.log("DIETS STRING: ", dietsString);
+
+      //Add to query string
+      qs.diet = dietsString;
+
+    }
+
+    //If intolerances aren't null
+    if(intolerances){
+      //Add all intolerances to the query string
+      for(i = 0; i < (intolerances.length) - 1; i++){
+        intolerancesString += intolerances[i];
+        intolerancesString += ',';
+      }
+
+      //Add last one
+      intolerancesString += intolerances[(intolerances.length)-1];
+      console.log("INTOLERANCES STRING: ", intolerancesString);
+
+      //Add to query string
+      qs.intolerances = intolerancesString;
+      
+    }
+
+
+    //Get the recipes from the API
+    request.get({headers: {"X-RapidAPI-Key": key, "X-RapidAPI-Host": host },
+    url:'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/searchComplex',
+    qs: qs, json: true}, (err, res, body) => {
+
+      if (err) { return console.log(err); }
+      console.log(body);
+
+      //Resolve with recipe list
+      resolve(body);
+    });
+  });
+
+}
 /*-------------------CREATE A NEW PLAYLIST-------------------------------*/
-async function createPlaylistHandler(genre, cookTime, recipeName, access_token, user_id){
-  const playlistID = await createNewPlaylist(recipeName, access_token, user_id);
+async function createPlaylistHandler(genre, cookTime, recipeName, user_id){
+  //Search database for user
+  const userDoc = await searchForUser(user_id);
+  console.log("USER DOC ", userDoc.access_token);
+  const access_token = userDoc.access_token;
+
+  const playlistInfo = await createNewPlaylist(recipeName, access_token, user_id);
   console.log("PROMISE 1 RESOLVED");
-  const searchResults = await searchSongs(genre, access_token, user_id);
+  const searchResults = await searchSongs(genre, access_token);
   console.log("PROMISE 2 RESOLVED");
   //console.log("SEARCH RESULTS: ", searchResults);
   const idArray = await narrowDownSongs(searchResults, cookTime);
   console.log("NEXT PROMISE RESOLVED");
-  const addSongsResults = await addSongsToPlaylist(idArray, playlistID, access_token);
-  return addSongsResults;
+  const addSongsResults = await addSongsToPlaylist(idArray, playlistInfo.id, access_token);
+  return {success: addSongsResults, url: playlistInfo.url};
 }
 
 function createNewPlaylist(recipeName, access_token, user_id){
@@ -252,17 +346,19 @@ function createNewPlaylist(recipeName, access_token, user_id){
 
       //New playlist ID
       let newPlaylistID = body.id;
+      let newPlaylistURL = body.external_urls.spotify;
 
-      resolve(newPlaylistID);
+      let playlistInfo = {id: newPlaylistID, url: newPlaylistURL};
+      resolve(playlistInfo);
 
     });
   })
 
 }
 
-function searchSongs(genre, access_token, user_id){
-  //Searches songs based on the genre the user prefers
-  //Do a search by selected genre for 250 songs, shuffle. 
+function searchSongs(genre, access_token){
+  //Searches songs based on a genre the user prefers
+  //Do a search by selected genre for 350 songs. 
   var i;
   var j;
   var counter = 0;
@@ -285,7 +381,7 @@ function searchSongs(genre, access_token, user_id){
           
 
         var searchResults = body.tracks["items"];
-        //console.log(body);
+        console.log(body);
         //return(searchResultsArray);
 
         for(j = 0; j < 50; j++){
@@ -309,21 +405,30 @@ function narrowDownSongs(songList, cookTime){
   //Take search results and narrow down to playlist of length of cook time
   return new Promise((resolve, reject) => {
     var totalTime = 0;
-    var trackIDs = new Array();
+    
     var i = 0;
-    while((totalTime <= cookTime) && (i < songList.length)){
-      console.log("RESULT ID:", songList[i]["uri"]);
-      //Append song to list of track IDs
-      trackIDs.push(songList[i]["uri"]);
-      //Add time of song to total time & convert to minutes
-      var trackLength = songList[i].duration_ms / 60000;
-      totalTime += trackLength;
-      //Next item on list
-      i++;
-
+    var j = 0;
+    var trackListArray = new Array();
+    console.log(songList.length);
+    
+      while((totalTime <= cookTime) && (i < songList.length)){
+        j = 0;
+        var trackIDs = [];
+          while (j < 50 && (i < songList.length) && (totalTime <= cookTime)){
+            console.log("RESULT ID:", songList[i]["uri"]);
+            //Append song to list of track IDs
+            trackIDs.push(songList[i]["uri"]);
+            //Add time of song to total time & convert to minutes
+            var trackLength = songList[i].duration_ms / 60000;
+            totalTime += trackLength;
+            //Next item on list
+            i++;
+            j++;
+          }
+          trackListArray.push(trackIDs);
     }
-
-    resolve(trackIDs);
+      console.log("ARRAY OF TRACK LISTS TO PUSH: ", trackListArray)
+    resolve(trackListArray);
   });
 
 }
@@ -331,22 +436,37 @@ function narrowDownSongs(songList, cookTime){
 function addSongsToPlaylist(idArray, newPlaylistID, access_token){
   //Adds songs to the new playlist created
   return new Promise((resolve, reject) => {
-    options = { method: 'POST',
-            url: 'https://api.spotify.com/v1/playlists/' + newPlaylistID + '/tracks',
-            body: {'uris': idArray},
-            headers: 
-            {
-              Authorization: 'Bearer ' + access_token, 'Content-Type': 'application/json', Accept: "application/json" },
-            json: true };
-            request(options, function (error, response, body) {
-              if (error) {reject(error);};
-            
-              //console.log(body);
+    var i = 0;
+    var counter = 0;
+    for(i = 0; i < idArray.length; i++){
+      options = { method: 'POST',
+      url: 'https://api.spotify.com/v1/playlists/' + newPlaylistID + '/tracks',
+      body: {'uris': idArray[i]},
+      headers: 
+      {
+        Authorization: 'Bearer ' + access_token, 'Content-Type': 'application/json', Accept: "application/json" },
+      json: true };
+      request(options, function (error, response, body) {
+        if (error) {reject(error);};
+      
+        //console.log(body);
 
-              resolve(1);
-            });
-          });
+        if(counter === (idArray.length-1)){
+          resolve(1);
+        }
+        
+        counter++;
+      });
 
+    }
+
+  });
+
+}
+
+function chooseRandomGenre(genres){
+  var index = Math.floor(Math.random() * (genres.length))
+  return genres[index];
 }
 
 /*-------------------------------- LOGIN ---------------------------------------------*/
@@ -429,7 +549,8 @@ function getUserProfile(access_token){
   });
 }
 
-/*---------------------------------DATABASE RELATED -----------------------------------*/
+
+/*---------------------------------DATABASE FUNCTIONS -----------------------------------*/
 //Search for user -- based on current user id
 function searchForUser(id){
   return new Promise((resolve, reject) => {

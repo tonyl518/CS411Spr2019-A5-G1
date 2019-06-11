@@ -1,8 +1,10 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
-
-  form(method = 'GET' action = '/login')
-    button(type="submit") Login With Spotify
+  center
+    img.main-logo(src='logo.svg')
+    h1.title#t1 HomeChef
+    h2.title#t2 Inspiration
+    
+    form(method = 'GET' action = '/login')
+      button(type="submit").login Login With Spotify

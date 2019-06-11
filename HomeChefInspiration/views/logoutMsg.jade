@@ -1,0 +1,8 @@
+extends layout
+
+block content
+  center
+    img.main-logo(src='logo.svg')
+    p.logout Thank you for visiting our application! Come back soon.
+    form(method = 'GET' action = '/')
+      button.btn.btn-primary(type='submit') Return to Login
